@@ -1,0 +1,2201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Push / KayaPush Storytelling Library</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0f14;
+    --surface: #141720;
+    --surface2: #1c2030;
+    --surface3: #222840;
+    --border: #2a3050;
+    --accent: #f4a326;
+    --accent2: #e85d2f;
+    --accent3: #3ecf8e;
+    --text: #e8eaf0;
+    --text2: #8b93b0;
+    --text3: #555e80;
+    --pill-bg: #1e2538;
+    --pill-text: #7b86a8;
+    --card-hover: #1a2035;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ---- HEADER ---- */
+  .header {
+    background: linear-gradient(135deg, #0d0f14 0%, #141828 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 28px 40px 24px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    backdrop-filter: blur(12px);
+  }
+
+  .header-inner {
+    max-width: 1380px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+
+  .logo-block {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
+  }
+
+  .logo-mark {
+    width: 38px;
+    height: 38px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'DM Mono', monospace;
+    font-weight: 500;
+    font-size: 16px;
+    color: #000;
+    letter-spacing: -1px;
+  }
+
+  .header-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 20px;
+    color: var(--text);
+    letter-spacing: -0.3px;
+  }
+
+  .header-sub {
+    font-size: 12px;
+    color: var(--text3);
+    font-family: 'DM Mono', monospace;
+    letter-spacing: 0.5px;
+    margin-top: 2px;
+  }
+
+  .search-wrap {
+    flex: 1;
+    max-width: 480px;
+    position: relative;
+  }
+
+  .search-wrap svg {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text3);
+    pointer-events: none;
+  }
+
+  #searchInput {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 14px 10px 40px;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  #searchInput:focus { border-color: var(--accent); }
+  #searchInput::placeholder { color: var(--text3); }
+
+  .story-count-badge {
+    margin-left: auto;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: var(--text3);
+    white-space: nowrap;
+  }
+
+  .story-count-badge span {
+    color: var(--accent);
+    font-weight: 500;
+  }
+
+  /* ---- LAYOUT ---- */
+  .main-layout {
+    max-width: 1380px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 0;
+    min-height: calc(100vh - 90px);
+  }
+
+  /* ---- SIDEBAR ---- */
+  .sidebar {
+    border-right: 1px solid var(--border);
+    padding: 24px 0;
+    position: sticky;
+    top: 90px;
+    height: calc(100vh - 90px);
+    overflow-y: auto;
+  }
+
+  .sidebar::-webkit-scrollbar { width: 4px; }
+  .sidebar::-webkit-scrollbar-track { background: transparent; }
+  .sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+  .sidebar-section-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--text3);
+    padding: 0 20px 10px;
+  }
+
+  .feature-nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 20px;
+    cursor: pointer;
+    transition: background 0.15s;
+    border-left: 3px solid transparent;
+    border-right: none;
+    background: none;
+    width: 100%;
+    text-align: left;
+  }
+
+  .feature-nav-item:hover { background: var(--surface2); }
+
+  .feature-nav-item.active {
+    background: var(--surface2);
+    border-left-color: var(--accent);
+  }
+
+  .feature-nav-item.active .feature-nav-name { color: var(--accent); }
+
+  .feature-nav-name {
+    font-size: 13.5px;
+    color: var(--text2);
+    font-weight: 400;
+    flex: 1;
+    line-height: 1.3;
+  }
+
+  .feature-nav-count {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    background: var(--surface3);
+    color: var(--text3);
+    padding: 2px 7px;
+    border-radius: 20px;
+    flex-shrink: 0;
+  }
+
+  .feature-nav-item.active .feature-nav-count {
+    background: rgba(244,163,38,0.15);
+    color: var(--accent);
+  }
+
+  /* Filter sections */
+  .filter-section {
+    padding: 20px 20px 0;
+    margin-top: 10px;
+    border-top: 1px solid var(--border);
+  }
+
+  .filter-section-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--text3);
+    margin-bottom: 10px;
+  }
+
+  .filter-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .filter-pill {
+    background: var(--pill-bg);
+    border: 1px solid var(--border);
+    color: var(--pill-text);
+    font-size: 11.5px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.15s;
+    user-select: none;
+  }
+
+  .filter-pill:hover { border-color: var(--accent); color: var(--accent); }
+
+  .filter-pill.active {
+    background: rgba(244,163,38,0.12);
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .clear-filters-btn {
+    margin-top: 14px;
+    font-size: 12px;
+    color: var(--text3);
+    cursor: pointer;
+    text-decoration: underline;
+    background: none;
+    border: none;
+    padding: 0;
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  .clear-filters-btn:hover { color: var(--text2); }
+
+  /* ---- MAIN CONTENT ---- */
+  .content {
+    padding: 28px 36px;
+    overflow-y: auto;
+  }
+
+  /* Home / Feature Grid */
+  .home-view { display: block; }
+  .feature-view { display: none; }
+
+  .home-prompt {
+    font-family: 'DM Serif Display', serif;
+    font-size: 30px;
+    color: var(--text);
+    margin-bottom: 6px;
+    letter-spacing: -0.5px;
+  }
+
+  .home-sub {
+    color: var(--text2);
+    font-size: 14px;
+    margin-bottom: 32px;
+  }
+
+  .feature-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 14px;
+  }
+
+  .feature-tile {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 20px;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .feature-tile::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+
+  .feature-tile:hover {
+    border-color: var(--accent);
+    background: var(--card-hover);
+    transform: translateY(-2px);
+  }
+
+  .feature-tile:hover::before { opacity: 1; }
+
+  .feature-tile-icon {
+    font-size: 24px;
+    margin-bottom: 10px;
+  }
+
+  .feature-tile-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+    line-height: 1.3;
+    margin-bottom: 6px;
+  }
+
+  .feature-tile-count {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: var(--accent);
+  }
+
+  /* Feature view header */
+  .feature-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+  }
+
+  .back-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--text2);
+    font-size: 13px;
+    cursor: pointer;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    padding: 7px 14px;
+    border-radius: 8px;
+    transition: all 0.15s;
+    font-family: 'DM Sans', sans-serif;
+    flex-shrink: 0;
+  }
+
+  .back-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+  .feature-header-title {
+    flex: 1;
+  }
+
+  .feature-header-name {
+    font-family: 'DM Serif Display', serif;
+    font-size: 26px;
+    color: var(--text);
+    letter-spacing: -0.3px;
+  }
+
+  .feature-header-count {
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    color: var(--text3);
+    margin-top: 2px;
+  }
+
+  /* Story Cards */
+  .story-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .story-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+
+  .story-card:hover { border-color: var(--surface3); }
+  .story-card.expanded { border-color: var(--accent); }
+
+  .story-card-header {
+    padding: 18px 22px;
+    cursor: pointer;
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .story-card-main { flex: 1; }
+
+  .story-title {
+    font-size: 15.5px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 5px;
+    line-height: 1.3;
+  }
+
+  .story-summary {
+    font-size: 13.5px;
+    color: var(--text2);
+    line-height: 1.5;
+  }
+
+  .story-tags-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 10px;
+  }
+
+  .story-tag {
+    font-size: 11px;
+    padding: 3px 9px;
+    border-radius: 20px;
+    font-family: 'DM Mono', monospace;
+  }
+
+  .tag-feature {
+    background: rgba(62,207,142,0.1);
+    color: var(--accent3);
+    border: 1px solid rgba(62,207,142,0.2);
+  }
+
+  .tag-usecase {
+    background: rgba(244,163,38,0.1);
+    color: var(--accent);
+    border: 1px solid rgba(244,163,38,0.2);
+  }
+
+  .tag-pain {
+    background: rgba(232,93,47,0.1);
+    color: var(--accent2);
+    border: 1px solid rgba(232,93,47,0.2);
+  }
+
+  .tag-persona {
+    background: rgba(139,147,176,0.1);
+    color: var(--text2);
+    border: 1px solid var(--border);
+  }
+
+  .expand-toggle {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    color: var(--text3);
+    transition: all 0.2s;
+    margin-top: 2px;
+  }
+
+  .story-card.expanded .expand-toggle {
+    background: rgba(244,163,38,0.12);
+    border-color: var(--accent);
+    color: var(--accent);
+    transform: rotate(180deg);
+  }
+
+  .story-card-body {
+    display: none;
+    padding: 0 22px 22px;
+    border-top: 1px solid var(--border);
+    margin-top: 0;
+  }
+
+  .story-card.expanded .story-card-body { display: block; }
+
+  .body-section {
+    margin-top: 18px;
+  }
+
+  .body-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--text3);
+    margin-bottom: 7px;
+  }
+
+  .body-text {
+    font-size: 13.5px;
+    color: var(--text2);
+    line-height: 1.65;
+  }
+
+  .full-story-box {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 8px 8px 0;
+    padding: 16px 18px;
+    font-size: 13.5px;
+    color: var(--text);
+    line-height: 1.7;
+    font-style: italic;
+  }
+
+  .callout-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 18px;
+  }
+
+  @media (max-width: 680px) { .callout-row { grid-template-columns: 1fr; } }
+
+  .callout-box {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+  }
+
+  .callout-box .body-label { margin-bottom: 5px; }
+
+  .callout-box .body-text {
+    font-size: 13px;
+  }
+
+  .transition-box {
+    background: rgba(62,207,142,0.06);
+    border: 1px solid rgba(62,207,142,0.2);
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin-top: 12px;
+  }
+
+  .followup-box {
+    background: rgba(244,163,38,0.06);
+    border: 1px solid rgba(244,163,38,0.2);
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin-top: 12px;
+  }
+
+  .no-results {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text3);
+    font-size: 15px;
+  }
+
+  .no-results strong {
+    display: block;
+    font-family: 'DM Serif Display', serif;
+    font-size: 22px;
+    color: var(--text2);
+    margin-bottom: 8px;
+  }
+
+  /* All stories view */
+  .stories-view-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+  }
+
+  .results-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: var(--text3);
+  }
+
+  .results-label span { color: var(--accent); }
+
+  /* Accent bar on cards when showing cross-feature */
+  .story-card .feature-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    background: rgba(244,163,38,0.08);
+    color: var(--accent);
+    border: 1px solid rgba(244,163,38,0.2);
+    padding: 3px 8px;
+    border-radius: 20px;
+    margin-bottom: 6px;
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-inner">
+    <div class="logo-block">
+      <div class="logo-mark">PK</div>
+      <div>
+        <div class="header-title">Storytelling Library</div>
+        <div class="header-sub">Push / KayaPush · Sales Enablement</div>
+      </div>
+    </div>
+    <div class="search-wrap">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <input id="searchInput" type="text" placeholder="Search stories, pain points, keywords…">
+    </div>
+    <div class="story-count-badge">
+      <span id="totalCount">55</span> stories across <span id="featureCount">17</span> features
+    </div>
+  </div>
+</div>
+
+<div class="main-layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-section-label">Features</div>
+    <div id="featureNav"></div>
+
+    <div class="filter-section">
+      <div class="filter-section-label">Sales Use Case</div>
+      <div class="filter-pills" id="usecasePills"></div>
+    </div>
+
+    <div class="filter-section">
+      <div class="filter-section-label">Pain Theme</div>
+      <div class="filter-pills" id="painPills"></div>
+    </div>
+
+    <div class="filter-section" style="padding-bottom:20px;">
+      <div class="filter-section-label">Audience</div>
+      <div class="filter-pills" id="personaPills"></div>
+      <button class="clear-filters-btn" id="clearFilters" style="display:none;">✕ Clear all filters</button>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="content">
+    <div class="home-view" id="homeView">
+      <div class="home-prompt">Which feature do you need a story for?</div>
+      <div class="home-sub">Select a feature below — or use search and filters to find the right story fast.</div>
+      <div class="feature-grid" id="featureGrid"></div>
+    </div>
+
+    <div class="feature-view" id="featureView">
+      <div class="feature-header">
+        <button class="back-btn" id="backBtn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5m7-7-7 7 7 7"/></svg>
+          All Features
+        </button>
+        <div class="feature-header-title">
+          <div class="feature-header-name" id="featureViewName"></div>
+          <div class="feature-header-count" id="featureViewCount"></div>
+        </div>
+      </div>
+      <div class="story-list" id="featureStoryList"></div>
+    </div>
+
+    <div id="searchView" style="display:none;">
+      <div class="stories-view-header">
+        <div class="feature-header-name" style="font-family:'DM Serif Display',serif;font-size:22px;">Search Results</div>
+        <div class="results-label" id="searchResultsLabel"></div>
+      </div>
+      <div class="story-list" id="searchStoryList"></div>
+    </div>
+  </main>
+</div>
+
+<script>
+// ========== DATA ==========
+const FEATURES = [
+  { id: 'ats', name: 'Applicant Tracking System', icon: '🎯', short: 'ATS / Hiring' },
+  { id: 'onboarding', name: 'Digital Onboarding', icon: '📋', short: 'Digital Onboarding' },
+  { id: 'chat', name: 'Chat & Communication', icon: '💬', short: 'Chat / Comms' },
+  { id: 'forecasting', name: 'Forecasting & POS Integration', icon: '📈', short: 'Forecasting & POS' },
+  { id: 'labor', name: 'Labor vs. Sales & Reporting', icon: '⚖️', short: 'Labor / Sales' },
+  { id: 'scheduling', name: 'Scheduling & Shift Management', icon: '📅', short: 'Scheduling' },
+  { id: 'compliance', name: 'Break & Clock Compliance', icon: '🛡️', short: 'Compliance' },
+  { id: 'timeclock', name: 'Clocking In & Out / Time Tracking', icon: '⏱️', short: 'Time Tracking' },
+  { id: 'clocksettings', name: 'Clock Settings & Approvals', icon: '✅', short: 'Clock Approvals' },
+  { id: 'payrollflow', name: 'Payroll Flow & Integration', icon: '🔄', short: 'Payroll Flow' },
+  { id: 'canadianpayroll', name: 'Canadian Payroll & Stat Holidays', icon: '🍁', short: 'Canadian Payroll' },
+  { id: 'payrollsimplicity', name: 'Payroll Simplicity & Tips', icon: '💳', short: 'Payroll & Tips' },
+  { id: 'reporting', name: 'Enterprise Reporting & BI', icon: '🗂️', short: 'Enterprise Reporting' },
+  { id: 'surveys', name: 'Engagement Surveys', icon: '📊', short: 'Surveys' },
+  { id: 'performance', name: 'Performance Reviews', icon: '⭐', short: 'Performance' },
+  { id: 'managerapp', name: 'Manager App & Remote Visibility', icon: '📱', short: 'Manager App' },
+  { id: 'cacompilance', name: 'California Compliance', icon: '⚖️', short: 'CA Compliance' },
+];
+
+const STORIES = [
+  {
+    id: 1,
+    title: 'The Keg: Paper Resumes Getting Lost',
+    features: ['ats'],
+    summary: 'At The Keg, paper resumes dropped off by walk-in candidates would sit in a mailbox, get misplaced, or never reach the right manager — costing top candidates.',
+    fullStory: 'At The Keg, resumes were still being collected by hand. Candidates would walk in, drop off a paper resume, and then that resume might sit in a mailbox, get misplaced, or never make it to the right manager. Strong candidates could easily be missed simply because the process was manual.',
+    pain: 'Manual hiring creates lost resumes, missed handoffs, slow follow-up, and poor candidate experience.',
+    impact: 'Strong candidates hired elsewhere due to slow or missed response.',
+    howToSay: '"Restaurants often tell us the same thing: someone drops off a great resume, it gets put in the wrong spot, and by the time the hiring manager sees it, that person has already taken another job. With Push, that same candidate scans a QR code, lands directly in the ATS, and your managers can act immediately."',
+    usecases: ['Discovery', 'Demo'],
+    painThemes: ['Hiring bottlenecks', 'Admin burden'],
+    personas: ['Owner', 'General Manager'],
+    tags: ['ATS', 'QR code', 'candidate', 'hiring', 'paper resumes', 'walk-in'],
+    whyItWorks: 'Every restaurant GM has lived this exact moment. It creates instant recognition and frames the ATS as a simple rescue — not a complex system.',
+    bestTime: 'During discovery when the prospect mentions inconsistent hiring or missed candidates.',
+    whatProspectFeels: 'Frustrated at having lost good people due to a broken process.',
+    transition: '"Let me give you a quick example of what this looks like in practice…"',
+    followup: '"Does that sound familiar — has that ever happened with a strong candidate at your location?"'
+  },
+  {
+    id: 2,
+    title: 'Earls: Patio Season Hiring Chaos',
+    features: ['ats'],
+    summary: 'Earls needed to rapidly scale from ~30 to 70 employees for patio season — and every existing hiring problem got multiplied when applicant volume spiked.',
+    fullStory: 'During patio season, restaurants may need to double their staff quickly. One rep shared the example of Earls going from roughly 30 to 70 employees once patio season opened. The issue is not just "more hiring"; it is that every existing hiring pain gets multiplied when applicant volume spikes.',
+    pain: 'More resumes, more job posts, more manager handoffs, more missed follow-ups, and more chaos during seasonal hiring.',
+    impact: 'Teams unable to keep pace with seasonal volume, resulting in understaffing or missed quality candidates.',
+    howToSay: '"When patio season hits, your hiring volume does not just increase — your hiring problems double. If resumes are already hard to track in January, they become almost impossible to manage in May. Push gives every applicant one path into the ATS, so your team can focus on interviewing and hiring instead of chasing resumes."',
+    usecases: ['Discovery', 'Demo', 'Closing / Urgency'],
+    painThemes: ['Hiring bottlenecks', 'Admin burden'],
+    personas: ['Owner', 'General Manager', 'Operator'],
+    tags: ['ATS', 'seasonal hiring', 'patio season', 'high volume', 'applicant flow'],
+    whyItWorks: 'Reframes volume as a risk multiplier — not just an inconvenience — creating urgency around solving the problem before peak season.',
+    bestTime: 'Seasonal businesses or any prospect approaching a growth phase.',
+    whatProspectFeels: 'Anxious about how to manage an upcoming wave of hiring without a better system.',
+    transition: '"Let me give you a quick example of what happens when hiring season hits without the right infrastructure…"',
+    followup: '"What does your hiring process look like when you are ramping up — how do you keep track of all the applicants?"'
+  },
+  {
+    id: 3,
+    title: 'Manager Handoff Breakdown',
+    features: ['ats'],
+    summary: 'A great candidate drops off a resume for a bar manager who isn\'t in until Thursday — and by the time anyone acts, that candidate is hired somewhere else.',
+    fullStory: 'A candidate walks in with a resume for a bartender role, but the bar manager is not in until Thursday. The manager who received the resume may be off Thursday. By the time the right person hears about the candidate, they may already be hired somewhere else.',
+    pain: 'Manager-to-manager handoffs break down when hiring is manual or dependent on memory.',
+    impact: 'Top candidates lost due to communication gaps between managers.',
+    howToSay: '"Everyone has had that candidate who looked great but got lost between managers. Push makes sure the candidate does not live in someone\'s memory or on a piece of paper — they live in the system, where the right manager can act on them."',
+    usecases: ['Discovery', 'Demo'],
+    painThemes: ['Hiring bottlenecks'],
+    personas: ['General Manager', 'Operator'],
+    tags: ['ATS', 'handoff', 'candidate dashboard', 'manager notes', 'visibility'],
+    whyItWorks: 'Highlights a painful but universal gap — the "telephone game" of candidate information between shifts.',
+    bestTime: 'When prospect mentions managing hiring across multiple managers or shifts.',
+    whatProspectFeels: 'The frustration of a lost opportunity that could have been prevented.',
+    transition: '"Here\'s the reality of what happens in multi-manager environments…"',
+    followup: '"How do your managers currently pass along candidate information when someone can\'t follow up right away?"'
+  },
+  {
+    id: 4,
+    title: "McDonald's Lost Resume",
+    features: ['ats'],
+    summary: 'A rep recalls applying to McDonald\'s, calling back two weeks later, and discovering the resume had been lost — a moment that still happens constantly.',
+    fullStory: 'One rep shared that when they were young, they applied to McDonald\'s and called back two weeks later, only to find out the resume had been lost. The point was that this still happens constantly when restaurants accept paper resumes.',
+    pain: 'The candidate believes they applied, but the business has no reliable record of the application.',
+    impact: 'Lost applicant trust, damaged employer brand, and missed hires.',
+    howToSay: '"I remember applying to McDonald\'s and calling back two weeks later, only to hear they had lost my resume. That is exactly what Push removes. Once someone applies through the QR code or job link, their application is captured and organized automatically."',
+    usecases: ['Discovery', 'Cold Call'],
+    painThemes: ['Hiring bottlenecks'],
+    personas: ['Owner', 'General Manager', 'HR Leader'],
+    tags: ['ATS', 'lost resume', 'QR code', 'digital application', 'candidate experience'],
+    whyItWorks: 'Personal rep story creates authenticity and instant relatability — the prospect remembers their own similar experiences.',
+    bestTime: 'Cold calls or early discovery to open a story about hiring pain.',
+    whatProspectFeels: 'Recognition — they have been on both sides of this problem.',
+    transition: '"I have a personal version of this story that still resonates with operators today…"',
+    followup: '"Have any of your managers ever mentioned losing track of a candidate they wanted to follow up with?"'
+  },
+  {
+    id: 5,
+    title: 'Simon Cowell vs. Paula Abdul Interview Styles',
+    features: ['ats'],
+    summary: 'In multi-location groups, each manager interviews differently — one strict, one lenient — leading to inconsistent hiring quality across locations.',
+    fullStory: 'For multi-location groups, every manager may interview differently. One manager is strict and critical like Simon Cowell; another is warmer and more lenient like Paula Abdul. Without a standard process, each location may be hiring against different criteria.',
+    pain: 'Inconsistent interviews lead to inconsistent hiring quality across locations.',
+    impact: 'Uneven talent quality across locations; no standard bar for who gets hired.',
+    howToSay: '"In a multi-location group, one manager may interview like Simon Cowell and another like Paula Abdul. The goal is not to remove their personality — it is to make sure every candidate is being evaluated against the same standard. That is where interview templates help."',
+    usecases: ['Discovery', 'Demo'],
+    painThemes: ['Hiring bottlenecks', 'Multi-location complexity'],
+    personas: ['Multi-Unit Executive', 'Owner', 'Operator'],
+    tags: ['interview templates', 'multi-location', 'hiring consistency', 'standards'],
+    whyItWorks: 'Memorable pop-culture comparison that lands immediately. Makes an abstract process problem feel tangible and human.',
+    bestTime: 'When talking to multi-unit operators who rely on managers to hire independently.',
+    whatProspectFeels: 'Recognition that their locations probably vary more than they realize.',
+    transition: '"Think about how differently two managers might run an interview without any standard format…"',
+    followup: '"If I asked two of your managers to describe their ideal candidate, would their answers look the same?"'
+  },
+  {
+    id: 6,
+    title: 'Work Visa / Work Permit Expiry',
+    features: ['onboarding', 'compliance'],
+    summary: 'A rep\'s spouse unknowingly worked illegally for two months after their work visa expired — because tracking was manual and nobody caught it.',
+    fullStory: 'One rep shared a personal story about a spouse whose work visa expired without them realizing, causing them to unknowingly work illegally for two months. It created risk for the employee and a potentially serious penalty for the employer.',
+    pain: 'Manual tracking of work permits and visa expirations creates legal, compliance, and employee-impact risk.',
+    impact: 'Legal exposure for the employer; the employee working without valid authorization.',
+    howToSay: '"This is not just an admin issue. If a work permit expires and nobody catches it, that can become a major issue for both the employee and the employer. Push helps track those documents and alert your team before they become a problem."',
+    usecases: ['Discovery', 'Objection Handling'],
+    painThemes: ['Compliance risk', 'Admin burden'],
+    personas: ['HR Leader', 'Owner', 'Operator'],
+    tags: ['onboarding', 'document tracking', 'work permit', 'visa', 'expiry alerts', 'compliance'],
+    whyItWorks: 'Personal story with high stakes — the compliance risk becomes real when attached to a real person\'s experience.',
+    bestTime: 'When discussing onboarding or compliance documentation with HR leaders.',
+    whatProspectFeels: 'Unease — they may realize they don\'t actually know the status of their team\'s documents.',
+    transition: '"There is a personal story behind this one that changed how I think about document tracking…"',
+    followup: '"Do you currently have a reliable way to know when employee work permits or certifications are due to expire?"'
+  },
+  {
+    id: 7,
+    title: 'Serving It Right Expired',
+    features: ['onboarding', 'compliance'],
+    summary: 'A bartender (Spencer) worked with an expired Serving It Right certification for months because it was buried in a spreadsheet nobody was actively monitoring.',
+    fullStory: 'Spencer shared that his Serving It Right certification expired while he was bartending, and the restaurant kept operating without catching it because the process was tracked manually in a spreadsheet.',
+    pain: 'Restaurants may unknowingly have staff working without valid certifications.',
+    impact: 'Liability exposure; potential liquor licensing issues if audited.',
+    howToSay: '"I personally worked behind the bar with an expired Serving It Right because it was buried in a spreadsheet. Push makes that visible before it becomes a compliance issue."',
+    usecases: ['Discovery', 'Demo'],
+    painThemes: ['Compliance risk'],
+    personas: ['Owner', 'Operator', 'HR Leader'],
+    tags: ['onboarding', 'certification', 'Serving It Right', 'expiry alerts', 'compliance', 'spreadsheet'],
+    whyItWorks: 'First-person vulnerability — the rep owned the failure, which is disarming and credible.',
+    bestTime: 'Early in discovery for restaurants or hospitality operators with certification requirements.',
+    whatProspectFeels: 'A quiet concern that they might have the same gap right now.',
+    transition: '"I will tell you a story from my own time working in restaurants that I am slightly embarrassed by…"',
+    followup: '"How are you currently tracking certifications like Serving It Right or food safe across your team?"'
+  },
+  {
+    id: 8,
+    title: 'Missing Void Cheques and SIN Numbers',
+    features: ['onboarding', 'payrollflow'],
+    summary: 'New hires regularly show up to orientation missing key payroll documents — and payroll teams end up chasing them every single pay run.',
+    fullStory: 'Several reps discussed how often employees show up to orientation without key payroll information like void cheques or SIN numbers. One example referenced operators having to ask repeatedly for missing information every pay run.',
+    pain: 'Payroll teams waste time chasing employees for missing information, and new hires may not be ready to schedule or pay.',
+    impact: 'Delayed payroll processing; frustrated HR and payroll teams.',
+    howToSay: '"Most operators have had that new hire who shows up without a void cheque, SIN, or required document. With Push, they cannot fully move forward until those sections are completed, so your team is not chasing payroll information after the fact."',
+    usecases: ['Discovery', 'Demo'],
+    painThemes: ['Admin burden', 'Payroll errors'],
+    personas: ['HR Leader', 'Payroll Leader', 'Owner'],
+    tags: ['onboarding', 'void cheque', 'SIN number', 'payroll readiness', 'required fields'],
+    whyItWorks: 'This problem is universal. Every payroll team has chased a void cheque from a new hire.',
+    bestTime: 'When discussing onboarding or payroll preparation with HR or payroll leaders.',
+    whatProspectFeels: 'Immediate recognition — this is a weekly frustration for many payroll teams.',
+    transition: '"This one comes up constantly when we talk to payroll teams…"',
+    followup: '"How often does your team have to follow up with new hires to collect missing payroll information?"'
+  },
+  {
+    id: 9,
+    title: 'Sagebrush / Golf Course Onboarding',
+    features: ['onboarding'],
+    summary: 'A golf course operator immediately connected with mandatory digital onboarding because they were exhausted from chasing void cheques before every payroll run.',
+    fullStory: 'A golf course operator reacted strongly to the idea that employees would need to complete all required information before being scheduled and paid, because they were tired of repeatedly chasing void cheques and payroll details.',
+    pain: 'Operators lose time and patience chasing basic employee information.',
+    impact: 'Payroll delays and management time wasted on administrative follow-up.',
+    howToSay: '"One golf course operator immediately connected with this because they were constantly chasing void cheques. The value was simple: once onboarding is complete, the employee is ready to schedule and pay. If it is not complete, everyone can see what is missing."',
+    usecases: ['Demo', 'Closing / Urgency'],
+    painThemes: ['Admin burden', 'Payroll errors'],
+    personas: ['Owner', 'Operator', 'HR Leader'],
+    tags: ['onboarding', 'digital onboarding', 'payroll readiness', 'golf course', 'void cheque'],
+    whyItWorks: 'Customer reaction story — showing that a real operator had an emotional response signals clear value recognition.',
+    bestTime: 'After showing the onboarding module in a demo to reinforce what the prospect is seeing.',
+    whatProspectFeels: '"That\'s exactly our problem right now."',
+    transition: '"When I showed this to one operator, their reaction said more than I could have…"',
+    followup: '"Can you relate to that — is chasing missing employee info something that comes up regularly for your team?"'
+  },
+  {
+    id: 10,
+    title: 'Employee Handbook Gets Thrown Out',
+    features: ['onboarding'],
+    summary: 'Employees review and sign the handbook on day one, then throw it away. Months later, policy disputes arise with no way to prove what was communicated.',
+    fullStory: 'Spencer shared that employee handbooks are often reviewed during orientation, signed, and then thrown away. Months or years later, when an issue comes up, the employee may say they never knew the rule.',
+    pain: 'Paper handbooks create weak accountability because employees may not retain or access the policies later.',
+    impact: 'Difficult to defend policy disputes; poor documentation in HR situations.',
+    howToSay: '"Everyone signs the handbook during onboarding, but most people throw it out after week one. With Push, that handbook lives in the employee app, so if there is ever a question later, the rules are still accessible and documented."',
+    usecases: ['Discovery', 'Demo'],
+    painThemes: ['Compliance risk', 'Admin burden'],
+    personas: ['HR Leader', 'Owner', 'Operator'],
+    tags: ['handbook', 'employee files', 'digital documents', 'employee app', 'policy', 'accountability'],
+    whyItWorks: 'Every manager has been in a policy dispute where they couldn\'t prove the employee was informed. This story surfaces that latent anxiety.',
+    bestTime: 'When discussing HR documentation or employee records with HR leaders.',
+    whatProspectFeels: 'Vulnerable — realizing their documentation may not protect them if challenged.',
+    transition: '"Think about the last time you went back to prove a policy had been communicated…"',
+    followup: '"If an employee challenged a policy today, do you have documentation showing they received and reviewed it?"'
+  },
+  {
+    id: 11,
+    title: "Joey's Facebook Groups and Text Chains",
+    features: ['chat'],
+    summary: 'At Joey\'s, all staff communication happened through Facebook and personal texts — creating buried messages, privacy issues, and no management control.',
+    fullStory: 'Spencer shared that at Joey\'s, communication happened through Facebook or direct texting. That created issues: employees had to use Facebook, personal information was shared, communication got buried, and former or disgruntled employees could still have access to personal contact information.',
+    pain: 'Restaurant communication often happens in uncontrolled, personal, and fragmented channels.',
+    impact: 'Lost messages, privacy exposure, and access risks from former staff.',
+    howToSay: '"When I worked in restaurants, everything was Facebook groups and text chains. It worked until it didn\'t — personal numbers everywhere, messages buried, and former staff still connected to everyone. Push chat keeps communication centralized and controlled inside the platform."',
+    usecases: ['Discovery', 'Demo'],
+    painThemes: ['Admin burden', 'Compliance risk'],
+    personas: ['Owner', 'General Manager', 'Operator'],
+    tags: ['chat', 'communication', 'Facebook', 'text chains', 'employee privacy', 'centralized'],
+    whyItWorks: 'Personal experience story with a relatable pivot moment — "it worked until it didn\'t."',
+    bestTime: 'When asking how the prospect currently communicates shift updates or schedule changes with staff.',
+    whatProspectFeels: 'Recognition of a problem they\'ve accepted as normal.',
+    transition: '"The way most restaurant teams communicate actually creates some real risk…"',
+    followup: '"How do you currently get operational updates and schedule changes to your whole team?"'
+  },
+  {
+    id: 12,
+    title: 'The Whiteboard in the Back',
+    features: ['chat'],
+    summary: 'Every restaurant\'s whiteboard only reaches the employees who happen to walk by it — Push digitizes that experience so everyone actually sees the message.',
+    fullStory: 'The team referenced the familiar "whiteboard in the back of the restaurant" as an easy story reps already use. Every restaurant has some version of it — a board with notes, reminders, updates, and manager messages.',
+    pain: 'Physical communication boards only work if employees are in the building, see the message, and remember it.',
+    impact: 'Staff missing critical operational updates; inconsistent pre-shift awareness.',
+    howToSay: '"Most restaurants have that whiteboard in the back with notes everyone is supposed to read. Push takes that same concept and puts it into the employee app, so communication is not limited to who happened to walk past the board."',
+    usecases: ['Discovery', 'Demo'],
+    painThemes: ['Admin burden'],
+    personas: ['General Manager', 'Owner', 'Operator'],
+    tags: ['chat', 'message center', 'announcements', 'whiteboard', 'employee communication'],
+    whyItWorks: 'Universal metaphor that every hospitality operator immediately recognizes. Zero mental translation required.',
+    bestTime: 'As a quick bridge into the communication or message center feature during demos.',
+    whatProspectFeels: '"Yep — that\'s our whiteboard."',
+    transition: '"You probably have some version of this in your restaurant…"',
+    followup: '"Do you know for certain that every employee is actually reading your pre-shift updates?"'
+  },
+  {
+    id: 13,
+    title: 'Earls: Disconnected Tools and Manual Labor Reporting',
+    features: ['forecasting', 'labor', 'reporting'],
+    summary: 'Earls used disconnected tools that forced HR and managers into manual labor-versus-sales reporting — resolved after switching to Push.',
+    fullStory: 'Earls was using disconnected tools, making employee data difficult for HR to pull and requiring managers to manually report labor versus sales. After switching to Push, HR saved time pulling employee data, and managers gained confidence managing labor costs in real time.',
+    pain: 'Disconnected systems force HR and managers into manual reporting and spreadsheet work.',
+    impact: 'Time wasted on manual reporting; delayed or inaccurate labor insights.',
+    howToSay: '"Earls was dealing with disconnected tools and manual labor reporting. The value was not just cleaner reports — it was that managers could actually see labor versus sales in real time and make better decisions during the shift."',
+    usecases: ['Discovery', 'Demo'],
+    painThemes: ['Labor cost', 'Admin burden', 'Lack of visibility'],
+    personas: ['HR Leader', 'Multi-Unit Executive', 'Finance Leader'],
+    tags: ['POS integration', 'labor reporting', 'enterprise', 'Earls', 'disconnected systems', 'real-time'],
+    whyItWorks: 'Named brand story (Earls) lends credibility and makes the problem feel enterprise-validated.',
+    bestTime: 'With multi-location operators who rely on manual consolidation of labor data.',
+    whatProspectFeels: 'Recognized — large hospitality brands face the same data integration problems they do.',
+    transition: '"We worked with one of the biggest names in Canadian hospitality on exactly this problem…"',
+    followup: '"How does your team currently pull together labor and sales data across locations — what does that process look like?"'
+  },
+  {
+    id: 14,
+    title: 'Tim Hortons Machine Learning Forecast',
+    features: ['forecasting'],
+    summary: 'Push\'s forecasting reached 98.02% accuracy across 8 Tim Hortons locations — until a manager added $2,000 manually, making it less accurate.',
+    fullStory: 'A rep shared a Tim Hortons example where forecasting was tested across eight Ontario restaurants on Labour Day Monday and reached 98.02% accuracy. Another piece of the story involved a manager, Yash, who did not fully trust the machine learning and manually added $2,000 to the trend; without that manual adjustment, the forecast would have been nearly dead on.',
+    pain: 'Operators often rely on gut instinct or historical habits, even when data is more accurate.',
+    impact: 'Over-scheduling or under-scheduling due to inaccurate gut-feel forecasts.',
+    howToSay: '"A lot of experienced operators trust what is in their head — and that experience matters. But in one Tim Hortons test, the machine learning forecast was almost dead on until a manager manually changed it. Push helps combine operator knowledge with data, instead of relying on gut feel alone."',
+    usecases: ['Demo', 'Objection Handling'],
+    painThemes: ['Labor cost', 'Lack of visibility'],
+    personas: ['Owner', 'Operator', 'Finance Leader'],
+    tags: ['forecasting', 'machine learning', 'Tim Hortons', 'POS data', 'labor planning', 'accuracy'],
+    whyItWorks: 'Specific numbers (98.02%, Labour Day, 8 locations) make the story feel like tested evidence, not a sales claim.',
+    bestTime: 'When handling objections around whether operators can trust automated forecasting.',
+    whatProspectFeels: 'Curiosity — they wonder if their own gut instincts are as accurate as they think.',
+    transition: '"We actually put this to the test with a well-known QSR chain — and the results surprised even us…"',
+    followup: '"How are your managers currently building their sales forecasts — is it more data-driven or experience-based?"'
+  },
+  {
+    id: 15,
+    title: 'Gut Instinct Cutting Servers at 8 PM',
+    features: ['labor', 'forecasting'],
+    summary: 'A floor manager sees the restaurant slow at 8 PM but has no real data — they\'re guessing whether to cut servers or hold, while labor bleeds.',
+    fullStory: 'A rep described the common situation where a floor manager sees the restaurant slow down around 8 PM and has to decide whether to cut servers. Without real-time data, they are guessing: will it stay slow, or will they get slammed again?',
+    pain: 'Managers are often making labor decisions based on instinct instead of real-time numbers.',
+    impact: 'Over-staffing late in shifts; margin erosion from instinct-driven labor decisions.',
+    howToSay: '"Your best managers probably have a strong gut feel. The challenge is that not every manager has the same instincts, and the owner is not always there at 8 PM. Push gives them real-time labor data so they are making educated decisions, not guesses."',
+    usecases: ['Discovery', 'Demo'],
+    painThemes: ['Labor cost', 'Lack of visibility'],
+    personas: ['Owner', 'General Manager', 'Operator'],
+    tags: ['real-time labor', 'POS integration', 'labor decisions', 'gut instinct', 'manager app'],
+    whyItWorks: 'Puts the rep in the prospect\'s restaurant at 8 PM — a completely real moment any manager has lived.',
+    bestTime: 'When discussing labor management with restaurant operators who rely on manager instincts.',
+    whatProspectFeels: 'Recognition — this is exactly how their floor runs tonight.',
+    transition: '"Picture 8 PM on a Friday night in your restaurant…"',
+    followup: '"How confident are you that your managers are making the right call about server cuts when you\'re not there?"'
+  },
+  {
+    id: 16,
+    title: "McDonald's Manual Hourly Labor Calculations",
+    features: ['labor', 'timeclock'],
+    summary: 'At McDonald\'s, managers printed reports and manually calculated labor percentages — by the time they found a problem, hours had already been lost.',
+    fullStory: 'A rep shared that at McDonald\'s, they had to print reports and manually calculate labor by the hour. Because it was such a chore, managers only did it once or twice per shift, which meant they might discover too late that they had been over labor for hours.',
+    pain: 'Manual labor calculations are slow, reactive, and often too late to fix the shift.',
+    impact: 'Consistent labor overage discovered after the damage is done.',
+    howToSay: '"At McDonald\'s, we used to print the numbers and manually calculate labor. Because it took effort, most managers only checked once or twice. With Push, that same check takes seconds, which means managers can adjust before they miss their labor target."',
+    usecases: ['Discovery', 'Demo'],
+    painThemes: ['Labor cost', 'Admin burden'],
+    personas: ['General Manager', 'Owner', 'Operator'],
+    tags: ['real-time labor', 'labor percentage', 'McDonald\'s', 'manual calculations', 'manager app'],
+    whyItWorks: 'The effort barrier is the key insight — managers don\'t check often enough because it\'s too painful. Push removes the barrier.',
+    bestTime: 'When discussing how often managers currently review labor during a shift.',
+    whatProspectFeels: 'Guilt — they know their managers aren\'t checking labor nearly as often as they should.',
+    transition: '"I used to work in operations, and here\'s how we handled labor tracking…"',
+    followup: '"How often are your managers checking labor-to-sales during a shift today?"'
+  },
+  {
+    id: 17,
+    title: 'Oliver & Bonacini / Aces in Places',
+    features: ['forecasting', 'scheduling'],
+    summary: 'Daily sales totals don\'t help managers make precise labor decisions — O&B needed hourly forecasting to know exactly when to put their best people on.',
+    fullStory: 'The team discussed how daily sales totals are not enough. If a restaurant expects $5,000 in sales, it matters whether those sales happen evenly throughout the day or mostly after 6 PM. Operators need to know when to schedule their strongest people and when to reduce labor. Oliver & Bonacini was referenced as an example to attach this concept to a real operator.',
+    pain: 'Daily forecasts do not help managers make precise labor decisions by hour.',
+    impact: 'Strongest staff scheduled at the wrong time; missed revenue and guest experience during peak hours.',
+    howToSay: '"A daily sales forecast tells you what might happen that day, but it does not tell you when you need your aces in places. If most of the revenue comes after 6 PM, your schedule needs to reflect that. Push helps managers plan labor around when sales actually happen."',
+    usecases: ['Demo', 'Discovery'],
+    painThemes: ['Labor cost', 'Scheduling inefficiency'],
+    personas: ['Multi-Unit Executive', 'Owner', 'General Manager'],
+    tags: ['forecasting', 'hourly', 'labor optimization', 'Oliver Bonacini', 'scheduling', 'aces in places'],
+    whyItWorks: 'Memorable phrase "aces in places" creates a sticky concept. Named brand adds credibility.',
+    bestTime: 'During scheduling or forecasting module demos.',
+    whatProspectFeels: 'The gap between their current daily view and the hourly precision they actually need.',
+    transition: '"There\'s a phrase that stuck with me from one of our enterprise conversations…"',
+    followup: '"Does your team currently know which hours drive the most revenue — and does your schedule reflect that?"'
+  },
+  {
+    id: 18,
+    title: 'Chef Managing Labor Remotely',
+    features: ['managerapp', 'labor'],
+    summary: 'A chef felt compelled to physically be in the restaurant to protect labor margins — until the Push app gave them real-time visibility from anywhere.',
+    fullStory: 'A chef who used Push said they used to feel like they had to physically be in the restaurant because they did not fully trust others to manage labor the same way. With the Push app, they could check labor remotely and message the team when cuts were needed.',
+    pain: 'Owners, chefs, and senior operators often feel they need to be on-site to protect labor margins.',
+    impact: 'Operator burnout; inability to step away from the business.',
+    howToSay: '"One chef told us he used to feel like he had to be in the restaurant to make sure labor was managed properly. With Push, he could see the labor numbers remotely and coach his team in real time. That is the difference between needing to be present and having visibility."',
+    usecases: ['Discovery', 'Demo', 'Closing / Urgency'],
+    painThemes: ['Labor cost', 'Lack of visibility'],
+    personas: ['Owner', 'Operator', 'General Manager'],
+    tags: ['manager app', 'remote visibility', 'labor', 'real-time', 'chef', 'ownership'],
+    whyItWorks: 'Speaks directly to the emotional burden of owner-operators who can\'t step away. Resonates personally.',
+    bestTime: 'With owner-operators who are deeply hands-on or express concern about their team managing without them.',
+    whatProspectFeels: 'Relief — the idea of being able to trust the team without being present.',
+    transition: '"We had a chef share something with us that I think a lot of operators feel but rarely say out loud…"',
+    followup: '"Do you feel like you need to be physically present to know that labor is being managed properly?"'
+  },
+  {
+    id: 19,
+    title: "Joey's Lunch Rush Labor Alarm",
+    features: ['labor'],
+    summary: 'After the lunch rush at Joey\'s, servers wouldn\'t leave voluntarily — and if the shift lead was busy, labor quietly crept too high while sales dropped.',
+    fullStory: 'Spencer shared that at Joey\'s, after the lunch rush died down, servers often would not volunteer to leave because they wanted to keep earning. If the shift lead was busy putting out fires, no one might notice that labor was too high while sales were dipping.',
+    pain: 'Labor leakage happens when managers are too busy to constantly monitor hours and sales.',
+    impact: 'Margin erosion as labor continues post-rush without visibility or alerts.',
+    howToSay: '"After lunch, sales can drop quickly, but employees are not going to volunteer to go home. If the manager is busy, labor quietly creeps up. Push alerts the team when labor needs attention, so you are not relying on one shift lead to catch everything."',
+    usecases: ['Discovery', 'Demo'],
+    painThemes: ['Labor cost'],
+    personas: ['General Manager', 'Owner', 'Operator'],
+    tags: ['labor alerts', 'sales dip', 'labor vs sales', 'Joey\'s', 'shift management', 'notifications'],
+    whyItWorks: 'Human truth — employees aren\'t going to cut themselves. It reframes alerts as a management support system, not surveillance.',
+    bestTime: 'When discussing labor controls or after-rush management.',
+    whatProspectFeels: 'Acknowledgment — they know this happens, they just haven\'t quantified the cost.',
+    transition: '"Here\'s something that happens at almost every restaurant after the main rush…"',
+    followup: '"What happens at your locations when sales slow down — how does the team typically decide when to start cutting?"'
+  },
+  {
+    id: 20,
+    title: "McDonald's Eight-Hour Manual Schedule",
+    features: ['scheduling'],
+    summary: 'One McDonald\'s manager spent a full eight-hour shift manually building the schedule — with time-off requests coming in as illegible scraps of paper.',
+    fullStory: 'A rep shared that at McDonald\'s, one manager would spend a full eight-hour shift manually creating the schedule. Time-off requests were pieces of paper dropped into a box, and sometimes the manager could not even read the handwriting.',
+    pain: 'Manual scheduling consumes manager time and creates errors.',
+    impact: 'Eight hours of management time lost every schedule cycle; errors from manual input.',
+    howToSay: '"I worked somewhere where a manager spent an entire shift just building the schedule. Time-off requests were scraps of paper in a box. Push turns that into a digital workflow, so managers are not spending a full day decoding notes and building schedules manually."',
+    usecases: ['Discovery', 'Demo'],
+    painThemes: ['Scheduling inefficiency', 'Admin burden'],
+    personas: ['Owner', 'General Manager', 'Operator'],
+    tags: ['scheduling', 'time-off requests', 'manual', 'McDonald\'s', 'availability'],
+    whyItWorks: 'Eight hours is visceral — it\'s an entire workday, every schedule cycle. Makes the admin burden impossible to dismiss.',
+    bestTime: 'When a prospect mentions how long scheduling takes or describes a manual process.',
+    whatProspectFeels: '"How many hours a week are we losing on this right now?"',
+    transition: '"I want to tell you about the most extreme version of manual scheduling I\'ve ever heard of…"',
+    followup: '"How many hours does your team currently spend building and adjusting the schedule each week?"'
+  },
+  {
+    id: 21,
+    title: 'Paper Schedule and Two-Manager Approval',
+    features: ['scheduling'],
+    summary: 'At McDonald\'s, a shift swap required two manager signatures — on a printed schedule — meaning employees had to physically travel to the store and hope both managers were there.',
+    fullStory: 'At one McDonald\'s location, shift changes required two managers to sign off, but the schedule was printed in the store. Employees had to physically go in and hope the right managers were there.',
+    pain: 'Printed schedules create friction, delays, and unnecessary trips to the store.',
+    impact: 'Frustrated employees; schedule changes falling through due to logistics.',
+    howToSay: '"When the schedule is printed in the store, every change becomes a physical process. Push makes the schedule live digitally, so changes, approvals, and visibility do not depend on someone being in the building."',
+    usecases: ['Discovery', 'Demo'],
+    painThemes: ['Scheduling inefficiency', 'Admin burden'],
+    personas: ['General Manager', 'Owner', 'Operator'],
+    tags: ['scheduling', 'paper schedule', 'approvals', 'digital schedule', 'shift changes'],
+    whyItWorks: 'Makes the absurdity of physical dependency on a printed schedule immediately clear.',
+    bestTime: 'When the prospect mentions their current schedule is printed or lives on a board.',
+    whatProspectFeels: 'Embarrassment — they realize how much friction they\'ve built into their process.',
+    transition: '"Let me give you an example of what happens when the schedule only exists on paper…"',
+    followup: '"How do your employees currently request or confirm schedule changes — is that process digital or paper-based?"'
+  },
+  {
+    id: 22,
+    title: 'Facebook Shift Swaps That Failed',
+    features: ['scheduling'],
+    summary: 'Employees agreed to swap shifts on Facebook — then didn\'t show up. No accountability, no paper trail, no resolution.',
+    fullStory: 'The team discussed trying Facebook groups for shift changes. Employees would agree to take a shift, then not show up, leaving uncertainty over who was accountable.',
+    pain: 'Informal shift swapping creates confusion, no-shows, and accountability issues.',
+    impact: 'Unexpected no-shows; no clear accountability for who was supposed to work.',
+    howToSay: '"Facebook shift swaps sound easy until someone says they will take a shift and then does not show up. Push keeps that process controlled, approved, and visible, so everyone knows who owns the shift."',
+    usecases: ['Discovery', 'Demo'],
+    painThemes: ['Scheduling inefficiency'],
+    personas: ['General Manager', 'Owner', 'Operator'],
+    tags: ['shift swaps', 'Facebook', 'accountability', 'no-shows', 'scheduling', 'approvals'],
+    whyItWorks: 'The no-show after a Facebook swap is a shared pain point in hospitality. It surfaces the reliability gap in informal tools.',
+    bestTime: 'When discussing how the team manages shift swaps or scheduling communication.',
+    whatProspectFeels: 'Frustration — they\'ve been burned by this and don\'t have a better system.',
+    transition: '"Social media scheduling sounds simple — until it isn\'t…"',
+    followup: '"What\'s your current process when an employee needs to swap or give away a shift?"'
+  },
+  {
+    id: 23,
+    title: 'Approved Time Off Still Scheduled',
+    features: ['scheduling'],
+    summary: 'Spencer\'s time-off request was approved — then he was scheduled anyway. The kicker: he was told it was his responsibility to find coverage.',
+    fullStory: 'Spencer shared that he had requested time off, was still scheduled, and then was told it was his responsibility to find coverage — even though the mistake came from management missing the request.',
+    pain: 'Missed time-off requests frustrate employees and can become a turnover trigger.',
+    impact: 'Employee resentment; turnover from a preventable scheduling error.',
+    howToSay: '"I have had time off approved, then still been scheduled, and then told to find my own coverage. That is the kind of mistake that makes good employees frustrated. Push shows unavailable time directly in the scheduling workflow so managers do not miss it."',
+    usecases: ['Discovery', 'Demo'],
+    painThemes: ['Scheduling inefficiency', 'Admin burden'],
+    personas: ['General Manager', 'HR Leader', 'Owner'],
+    tags: ['time off', 'scheduling', 'availability', 'employee frustration', 'turnover'],
+    whyItWorks: 'Personal story from the employee perspective — shifts the lens from operational to human impact.',
+    bestTime: 'When discussing employee experience or retention alongside scheduling.',
+    whatProspectFeels: 'Awareness that scheduling errors have a direct human cost that affects retention.',
+    transition: '"Here\'s a story from my own time working in restaurants that shows the real cost of a scheduling mistake…"',
+    followup: '"Have your managers ever scheduled someone who had already had time off approved — and how was that handled?"'
+  },
+  {
+    id: 24,
+    title: 'Vibe by California Manual Break Waivers',
+    features: ['compliance', 'cacompilance'],
+    summary: 'Vibe by California was managing manual break waivers and complex clock approvals — and said moving to digital felt like having an extra manager in every store.',
+    fullStory: 'Vibe by California was using manual break waivers and dealing with complicated clock approvals and adjustments. Rich, their HR leader, felt more confident after moving to a digital process and said it felt like having an extra manager on duty in each store.',
+    pain: 'Manual compliance processes create liability, lost paperwork, and management burden.',
+    impact: 'Reduced compliance risk; management time saved on break waiver administration.',
+    howToSay: '"Vibe by California was managing break waivers manually, which created risk and admin work. With KayaPush, those waivers are digital, attached to the employee file, and easier to manage. Their HR team described it like having another manager on duty."',
+    usecases: ['Demo', 'Closing / Urgency'],
+    painThemes: ['Compliance risk', 'Admin burden'],
+    personas: ['HR Leader', 'Owner', 'Operator'],
+    tags: ['break waivers', 'California compliance', 'KayaPush', 'digital compliance', 'HR', 'Vibe'],
+    whyItWorks: '"Extra manager on duty" is a powerful customer-generated metaphor that makes the ROI intuitively clear.',
+    bestTime: 'California demos; any operator discussing break compliance pain.',
+    whatProspectFeels: 'Relief — the complexity they\'re managing manually can be simplified.',
+    transition: '"One of our California customers put it in a way that really stuck…"',
+    followup: '"How confident are you today that your break documentation would hold up if you were ever audited?"'
+  },
+  {
+    id: 25,
+    title: 'Servers "Running the Clock" After Their Shift',
+    features: ['timeclock'],
+    summary: 'At Local, servers finished their shift, hung around upstairs, then came back down and clocked out later — adding quiet labor costs across a large staff.',
+    fullStory: 'One rep shared that at Local, employees are restricted from clocking in too early, but there is not the same level of enforcement when clocking out. As a result, some servers finish their shift, hang around upstairs, then come back down and clock out later.',
+    pain: 'Time theft does not always look dramatic. It can be 10–15 extra minutes at the end of a shift, repeated across dozens or hundreds of employees.',
+    impact: 'Significant compounding labor cost across a large hourly workforce.',
+    howToSay: '"A lot of time leakage does not come from someone blatantly lying. It is the server who finishes, chats for 15 minutes, then clocks out. Across one employee, it feels small. Across 200 employees, it becomes a real labor cost problem. Push gives managers tighter visibility and approval control around those hours."',
+    usecases: ['Discovery', 'Demo'],
+    painThemes: ['Labor cost'],
+    personas: ['Owner', 'General Manager', 'Finance Leader'],
+    tags: ['time tracking', 'clock-out', 'time theft', 'labor leakage', 'facial recognition', 'approvals'],
+    whyItWorks: 'Reframes "small" behavior as a systemic cost issue using scale math.',
+    bestTime: 'When discussing time tracking, especially with larger teams.',
+    whatProspectFeels: 'Realization — what they thought was harmless adds up to real money.',
+    transition: '"Let me paint a picture of the kind of time leakage that rarely gets flagged…"',
+    followup: '"Do you have any way to know today whether there\'s a gap between when shifts end and when employees actually clock out?"'
+  },
+  {
+    id: 26,
+    title: 'Pen-and-Paper Clock-Out Guessing',
+    features: ['timeclock'],
+    summary: 'Spencer finished his shift, got distracted at the bar, then guessed his clock-out time on paper — accidentally overstating his hours without bad intent.',
+    fullStory: 'Spencer shared that when he clocked out on pen and paper in restaurants, it was easy to lose track. He might finish work, have a drink at the bar, then later estimate when he stopped — sometimes adding 15 or 30 minutes without even intending to be dishonest.',
+    pain: 'Manual time tracking encourages guesswork, and guesswork usually costs the business money.',
+    impact: 'Habitual overstatement of hours without intent to defraud.',
+    howToSay: '"When time is tracked manually, employees are often not trying to steal time — they are just guessing. I remember finishing a shift, getting distracted, and then writing down what I thought my end time was. Push removes that ambiguity entirely."',
+    usecases: ['Discovery', 'Demo'],
+    painThemes: ['Labor cost', 'Admin burden'],
+    personas: ['Owner', 'General Manager', 'Payroll Leader'],
+    tags: ['time tracking', 'manual clocking', 'guesswork', 'payroll accuracy', 'digital time clocks'],
+    whyItWorks: 'Rep vulnerability story — positions the problem as a system issue, not an employee character issue, which is more persuasive.',
+    bestTime: 'When discussing the accuracy of manual time tracking with skeptical prospects.',
+    whatProspectFeels: 'They realize how much of their payroll is based on guesswork rather than data.',
+    transition: '"This one is a personal confession about how I tracked my own time…"',
+    followup: '"If your employees are clocking time manually, how confident are you that those numbers are accurate?"'
+  },
+  {
+    id: 27,
+    title: 'Forgot to Clock Out After a Split Shift',
+    features: ['timeclock'],
+    summary: 'A rep left after a serving shift into a bar shift, forgot to clock out, realized it later in the app, and messaged the manager directly — avoiding a payroll mess.',
+    fullStory: 'A rep described working a serving shift followed by a bar shift. If they forgot to clock out and only realized after leaving, they could open the app, see that they were still clocked in, and message their manager to correct it rather than returning to the restaurant.',
+    pain: 'Missed punches create unnecessary back-and-forth and payroll correction work.',
+    impact: 'Faster resolution of punch errors; fewer payroll corrections needed.',
+    howToSay: '"Sometimes the value is not just catching bad behavior — it is helping good employees fix honest mistakes. If someone leaves and realizes they are still clocked in, they can see it immediately and message the manager instead of it becoming a payroll surprise later."',
+    usecases: ['Demo', 'Discovery'],
+    painThemes: ['Admin burden', 'Payroll errors'],
+    personas: ['General Manager', 'Owner', 'Payroll Leader'],
+    tags: ['employee app', 'clock-out', 'missed punch', 'payroll corrections', 'mobile app'],
+    whyItWorks: 'Flips the narrative from control to empowerment — the employee app helps honest employees too.',
+    bestTime: 'During mobile app or time tracking feature demos.',
+    whatProspectFeels: 'Appreciation for a tool that helps both the business and the employee.',
+    transition: '"Here\'s a feature that actually helps your best employees just as much as it helps you…"',
+    followup: '"What happens today when an employee realizes they forgot to clock out — how does that get resolved?"'
+  },
+  {
+    id: 28,
+    title: 'Buddy Punching',
+    features: ['timeclock'],
+    summary: 'A late employee texts a coworker their PIN — "clock me in" — and suddenly they\'re on the clock before they\'re even in the building.',
+    fullStory: 'A rep used the classic example of an employee running late and texting a co-worker: "Here\'s my four-digit code — clock me in." Without stronger verification, the manager may never know that the person was not actually present.',
+    pain: 'PIN-based or trust-based systems can be easily abused.',
+    impact: 'Paid time for employees who were not physically present.',
+    howToSay: '"Buddy punching is simple: I\'m late, I text my friend my code, and suddenly I\'m on the clock before I\'m even in the building. Facial recognition eliminates that loophole."',
+    usecases: ['Discovery', 'Demo'],
+    painThemes: ['Labor cost'],
+    personas: ['Owner', 'General Manager', 'Finance Leader'],
+    tags: ['buddy punching', 'facial recognition', 'time theft', 'accountability', 'PIN'],
+    whyItWorks: 'So direct and specific it\'s almost funny. Every manager knows this happens; now they have a solution.',
+    bestTime: 'When introducing facial recognition or discussing time theft prevention.',
+    whatProspectFeels: 'Admission — they probably suspect this happens and have no current solution.',
+    transition: '"Here\'s the simplest form of time theft — and it\'s almost impossible to catch without the right tools…"',
+    followup: '"How are employees currently verifying their identity when they clock in — is it just a PIN or number?"'
+  },
+  {
+    id: 29,
+    title: 'Geofencing for Separate Revenue Centers',
+    features: ['timeclock'],
+    summary: 'At Earls, a taco stand in the alley and the restaurant upstairs meant employees could clock into the wrong location — geofencing ensures they clock in where they\'re actually working.',
+    fullStory: 'A rep referenced Earls, where one business had a taco stand in the alley and the primary restaurant upstairs. If a busser or runner is working in one revenue center versus another, the employer needs confidence that they are clocking into the correct work location.',
+    pain: 'Complex or multi-zone businesses may need to distinguish where employees are actually working.',
+    impact: 'Accurate labor allocation by revenue center or work zone.',
+    howToSay: '"If your business has distinct areas — a patio, satellite counter, taco stand, lounge, or separate service area — geofencing gives you better confidence that employees are clocking in where they are actually working."',
+    usecases: ['Demo', 'Discovery'],
+    painThemes: ['Labor cost', 'Multi-location complexity'],
+    personas: ['Owner', 'Multi-Unit Executive', 'Finance Leader'],
+    tags: ['geofencing', 'clock-in', 'Earls', 'revenue centers', 'multi-location', 'mobile clocking'],
+    whyItWorks: 'Earls example is specific and visual — easy for the prospect to map to their own physical layout.',
+    bestTime: 'With multi-location operators or businesses with separate service areas.',
+    whatProspectFeels: 'Recognition if they have patios, popup counters, or satellite operations.',
+    transition: '"For businesses with multiple zones or areas, there\'s a location accuracy issue that often goes unaddressed…"',
+    followup: '"If you have different service areas or revenue centers, do you have a way to know employees are clocking in at the right location?"'
+  },
+  {
+    id: 30,
+    title: 'The Whiteboard Nobody Checks (Clock-In Messages)',
+    features: ['timeclock', 'chat'],
+    summary: 'Earls managers had to wrangle servers before service or rely on a whiteboard — but employees who got sat immediately missed the nightly updates entirely.',
+    fullStory: 'At Earls, managers often had to wrangle servers together to communicate nightly updates, or they relied on a back-of-house whiteboard that many employees never saw. Spencer added that the whiteboard might include specials or wines to push, but if an employee went straight to the floor or got sat immediately, they could miss the information entirely.',
+    pain: 'Operational communication often fails because it depends on employees being in the right place at the right time.',
+    impact: 'Staff missing upsell prompts, nightly specials, or key operational updates.',
+    howToSay: '"Every restaurant has some version of the whiteboard in the back. The problem is that it only works if staff actually walk by it and read it. Push puts those messages in front of the employee at clock-in, before they hit the floor."',
+    usecases: ['Discovery', 'Demo'],
+    painThemes: ['Admin burden'],
+    personas: ['General Manager', 'Owner', 'Operator'],
+    tags: ['clock-in messages', 'whiteboard', 'pre-shift communication', 'Earls', 'announcements'],
+    whyItWorks: 'Bridges a universal pain (whiteboard nobody reads) to a feature that guarantees delivery at the right moment.',
+    bestTime: 'During clock-in settings or communication feature demos.',
+    whatProspectFeels: 'The realization that their whiteboard communication is hit-or-miss, not reliable.',
+    transition: '"Every restaurant has some version of the whiteboard — and almost every restaurant has the same problem with it…"',
+    followup: '"How do you currently make sure that every employee gets your pre-shift updates before they start their shift?"'
+  },
+  {
+    id: 31,
+    title: 'Menu Launch Quizzes No One Completes',
+    features: ['timeclock', 'surveys'],
+    summary: 'At Earls, paper quiz follow-ups after menu launches were often delayed or forgotten — clock-in surveys embed the follow-up directly in the workflow.',
+    fullStory: 'A rep shared that at Earls, staff would attend menu launch sessions and later be handed paper quizzes. In reality, quizzes were often delayed, forgotten, or never distributed because managers were too busy. Surveys tied to clock-in or clock-out allowed the business to ask the questions directly in the workflow.',
+    pain: 'Training follow-up often breaks down because it lives outside the employee\'s normal workflow.',
+    impact: 'Training investment wasted; staff unprepared to speak to new menus.',
+    howToSay: '"Instead of running a menu training, handing out quizzes later, and hoping managers remember to collect them, Push lets you ask those questions during clock-in or clock-out. The training follow-up becomes part of the shift."',
+    usecases: ['Demo', 'Discovery'],
+    painThemes: ['Admin burden'],
+    personas: ['General Manager', 'Owner', 'HR Leader'],
+    tags: ['clock-in surveys', 'training', 'menu launch', 'Earls', 'quizzes', 'workflow'],
+    whyItWorks: 'Shows how an existing pain (training follow-up failure) can be solved by embedding it in the existing workflow.',
+    bestTime: 'During clock-in settings or survey feature demos.',
+    whatProspectFeels: 'Relief — a simpler way to close the training follow-up gap without adding manager workload.',
+    transition: '"Here\'s how one restaurant solved the eternal problem of training follow-up…"',
+    followup: '"How do you currently verify that staff actually absorbed a menu training or policy update?"'
+  },
+  {
+    id: 32,
+    title: 'Clocking In Before You Are Actually Ready to Work',
+    features: ['timeclock'],
+    summary: 'Employees clock in on time, then spend 15–20 minutes getting changed and ready — photo capture helps confirm they\'re actually ready to begin.',
+    fullStory: 'Spencer described the employee who clocks in right at their start time, then goes to the back for 15–20 minutes to get changed, do their hair, put on makeup, or otherwise get ready before actually stepping onto the floor.',
+    pain: 'Being in the building is not the same as being ready to work.',
+    impact: 'Paid non-productive time built into every shift for unprepared employees.',
+    howToSay: '"One of the most common forms of labor leakage is not someone skipping work — it is someone clocking in and then spending 15 minutes getting ready. With photo capture, managers have more context around whether someone was actually ready to begin their shift."',
+    usecases: ['Discovery', 'Demo'],
+    painThemes: ['Labor cost'],
+    personas: ['Owner', 'General Manager', 'Finance Leader'],
+    tags: ['photo capture', 'facial recognition', 'time theft', 'labor leakage', 'clock-in', 'ready to work'],
+    whyItWorks: 'Introduces a form of time leakage that operators often overlook because it doesn\'t feel like "theft."',
+    bestTime: 'When discussing photo capture or facial recognition features.',
+    whatProspectFeels: 'Recognition — they know this happens and haven\'t had a way to address it.',
+    transition: '"There\'s a version of time leakage that almost never gets addressed because it feels too normal…"',
+    followup: '"How long does it typically take from when an employee clocks in to when they\'re actually on the floor and ready?"'
+  },
+  {
+    id: 33,
+    title: "Gaming the Rounding Rules at McDonald's",
+    features: ['timeclock'],
+    summary: 'Ryan knew exactly when to delay clocking out to gain extra pay from 15-minute rounding increments — a pattern that reporting and facial recognition could now detect.',
+    fullStory: 'Ryan shared that at McDonald\'s, pay was rounded in 15-minute increments. He knew exactly when to delay clocking out to gain a few extra dollars. He would change out of uniform, wait until the favorable rounding point, then clock out.',
+    pain: 'Small time-clock habits can become costly when repeated often and across multiple staff.',
+    impact: 'Cumulative overpayment from systematic exploitation of rounding rules.',
+    howToSay: '"When systems create rounding loopholes, employees learn them quickly. I knew exactly when to clock out to gain extra time. Push gives you the visibility to identify those patterns instead of discovering them months later."',
+    usecases: ['Discovery', 'Demo'],
+    painThemes: ['Labor cost'],
+    personas: ['Owner', 'Finance Leader', 'Payroll Leader'],
+    tags: ['time tracking', 'rounding', 'McDonald\'s', 'facial recognition', 'reporting', 'punch trends'],
+    whyItWorks: 'Rep admits to gaming the system personally — high authenticity, disarming, hard to dismiss.',
+    bestTime: 'When discussing punch reporting or time tracking analytics.',
+    whatProspectFeels: 'The realization that their own employees likely know and use similar loopholes.',
+    transition: '"I\'ll be honest about something I did working in fast food that your employees are probably doing too…"',
+    followup: '"Does your current time tracking system give you any visibility into punch patterns or anomalies?"'
+  },
+  {
+    id: 34,
+    title: '$50 or $100 a Day in Time Leakage Becomes Real Money',
+    features: ['timeclock', 'labor'],
+    summary: 'Even $50/day in minor time-tracking inaccuracies becomes $18,000/year — and a few extra minutes per employee can add up to $15,000+ annually.',
+    fullStory: 'Multiple reps discussed putting a dollar value beside "small" time theft. Even $50 per day is roughly $18,000 per year; $100 per day is roughly $36,000 per year. Another rep referenced calculating time leakage for a client and showing that only a few minutes of overstated time per employee could add up to approximately $15,000 or more annually.',
+    pain: 'Operators often underestimate how expensive small time-tracking inaccuracies become.',
+    impact: 'Material annual labor cost from incremental daily leakage.',
+    howToSay: '"Five extra minutes here and 10 minutes there rarely feels urgent, but when you multiply that across every shift, every employee, every location, it becomes a material labor cost issue."',
+    usecases: ['Closing / Urgency', 'Objection Handling', 'Follow-Up'],
+    painThemes: ['Labor cost'],
+    personas: ['Owner', 'Finance Leader', 'Multi-Unit Executive'],
+    tags: ['ROI', 'time leakage', 'labor cost', 'annualize', 'time tracking', 'financial impact'],
+    whyItWorks: 'ROI math flips perceived small issues into urgent financial priorities. Quantification drives urgency.',
+    bestTime: 'When closing or handling "this isn\'t a big problem for us" objections.',
+    whatProspectFeels: 'Urgency — the math makes the cost impossible to wave away.',
+    transition: '"Let me show you how to put a real number beside what might feel like a small inconvenience…"',
+    followup: '"If I calculated that for your specific team size and shift structure, would it change how you think about fixing this?"'
+  },
+  {
+    id: 35,
+    title: 'Clocking Into a POS Not Connected to the Schedule',
+    features: ['clocksettings'],
+    summary: 'When the time clock isn\'t connected to the schedule, someone must manually compare what should have happened vs. what was recorded — creating daily errors.',
+    fullStory: 'Spencer described clocking into systems that were not connected to the actual schedule. In some cases, start times were pre-written on paper, meaning employees could arrive early or late and still be paid as if they started at the scheduled time.',
+    pain: 'When clocking and scheduling are disconnected, accuracy depends on manual review.',
+    impact: 'Overpaying early arrivals; underpaying early starters; constant manual reconciliation.',
+    howToSay: '"If your time clock is not connected to your schedule, someone still has to interpret what should have happened versus what actually happened. Push closes that gap."',
+    usecases: ['Discovery', 'Demo'],
+    painThemes: ['Payroll errors', 'Admin burden'],
+    personas: ['Payroll Leader', 'General Manager', 'Owner'],
+    tags: ['schedule', 'time clock', 'integration', 'POS', 'connected', 'payroll accuracy'],
+    whyItWorks: 'Simple logic — if systems don\'t talk, humans have to bridge the gap. Framing the cost of that human bridge is the key move.',
+    bestTime: 'When the prospect uses a POS-based time clock separate from their scheduling tool.',
+    whatProspectFeels: 'Realization that their current setup requires more manual work than they\'ve admitted.',
+    transition: '"Most operators don\'t realize there\'s a gap between their time clock and their actual schedule — until we show them what fills that gap today…"',
+    followup: '"Is your current time clock connected to your schedule, or are those two separate systems?"'
+  },
+  {
+    id: 36,
+    title: "McDonald's Manager Reviewing Every Punch Manually",
+    features: ['clocksettings'],
+    summary: 'A late-night McDonald\'s manager printed the schedule every night and manually compared each punch against it — consuming up to an hour daily.',
+    fullStory: 'A rep shared that a late-night manager at McDonald\'s manually reviewed every clock-in and clock-out each night. They printed the schedule, compared it to the time clock, and adjusted punches one by one based on company rules. This could easily consume an hour every night.',
+    pain: 'Manual punch verification is repetitive, tedious, and expensive.',
+    impact: 'One hour of manager time lost nightly; 365 hours/year per location.',
+    howToSay: '"One manager I worked with spent about an hour every night just checking punches against the schedule. Push removes a huge portion of that repetitive verification work."',
+    usecases: ['Discovery', 'Demo', 'Follow-Up'],
+    painThemes: ['Admin burden', 'Labor cost'],
+    personas: ['General Manager', 'Owner', 'Payroll Leader'],
+    tags: ['time approvals', 'manual review', 'McDonald\'s', 'punch verification', 'schedule comparison'],
+    whyItWorks: 'The one-hour nightly ritual is tangible and annualizable — 365 hours of manager time is significant.',
+    bestTime: 'When discussing time approval workflows with operations-heavy prospects.',
+    whatProspectFeels: 'Frustration at the recognition of how much time this consumes.',
+    transition: '"Here\'s what happens every night at a restaurant that uses a manual punch review process…"',
+    followup: '"Who on your team is currently responsible for reviewing and approving hours — and how long does that typically take?"'
+  },
+  {
+    id: 37,
+    title: "McDonald's Owner Guessing at Hours Days Later",
+    features: ['clocksettings'],
+    summary: 'A McDonald\'s owner only reviewed clock-ins twice a week — by Thursday, he was guessing at Monday\'s hours and admitted he likely overpaid to avoid underpaying.',
+    fullStory: 'Spencer shared a story about a McDonald\'s owner who reviewed clock-ins only twice a week because doing it nightly was too manual. By Thursday, he could not confidently remember when someone started or ended on Monday, so he often guessed — and admitted the business likely overpaid to avoid underpaying.',
+    pain: 'The longer approvals are delayed, the less accurate the review becomes.',
+    impact: 'Habitual overpayment as a defensive strategy against approval uncertainty.',
+    howToSay: '"The real cost of manual approvals is not just time. It is that by the time someone reviews the shift three days later, they are guessing. Push helps you catch and resolve those questions while the shift is still recent."',
+    usecases: ['Discovery', 'Closing / Urgency'],
+    painThemes: ['Payroll errors', 'Labor cost'],
+    personas: ['Owner', 'General Manager', 'Payroll Leader'],
+    tags: ['time approvals', 'payroll accuracy', 'McDonald\'s', 'late reviews', 'overpayment'],
+    whyItWorks: 'Owner admitting to overpaying as a strategy is a powerful confession. Makes the cost of delay concrete.',
+    bestTime: 'When discussing the accuracy of the prospect\'s current approval cadence.',
+    whatProspectFeels: 'Recognition — they know they\'re doing something similar and don\'t love admitting it.',
+    transition: '"Here\'s what a business owner admitted about their approval process that surprised even me…"',
+    followup: '"How soon after a shift do you or your managers typically review and approve the hours?"'
+  },
+  {
+    id: 38,
+    title: 'Kaya Operators Spending "Only 25 Minutes" Verifying Hours',
+    features: ['clocksettings'],
+    summary: '"Only 25 minutes" per payroll cycle sounds harmless — until you annualize it across every location and every pay run.',
+    fullStory: 'On the KayaPush side, a rep shared that many businesses clock in through their POS, then spend 20–25 minutes verifying employee hours. Prospects often dismiss it as "not too bad," until the rep reframes it: how long do you want to keep doing that every payroll cycle, every month, every year?',
+    pain: 'Recurring admin work feels small until it is annualized.',
+    impact: 'Hours of admin time per year across payroll cycles and locations.',
+    howToSay: '"Twenty-five minutes does not sound painful in isolation. But if you are doing it every payroll cycle, across every location, that becomes hours of admin time spent on something a connected system should handle."',
+    usecases: ['Objection Handling', 'Closing / Urgency'],
+    painThemes: ['Admin burden'],
+    personas: ['Owner', 'Payroll Leader', 'General Manager'],
+    tags: ['KayaPush', 'time tracking', 'payroll verification', 'admin time', 'annualize'],
+    whyItWorks: 'Classic annualization reframe — turns a dismissed "small" problem into a compelling cost.',
+    bestTime: 'When the prospect downplays a current pain as "not that bad."',
+    whatProspectFeels: 'A shift in perspective — realizing the cumulative cost of something they\'d accepted as normal.',
+    transition: '"I hear \'it\'s only 25 minutes\' a lot — let me show you what that actually adds up to…"',
+    followup: '"If we could cut that to under five minutes, how would you rather spend that time every payroll cycle?"'
+  },
+  {
+    id: 39,
+    title: 'Manager and Employee Faking Hours Together',
+    features: ['clocksettings'],
+    summary: 'A manager and employee were friends — and had been colluding to falsify hours. The audit trail in Push would have caught it immediately.',
+    fullStory: 'A rep shared a client story where a manager and employee were friends and had been falsifying hours together. When the rep showed the system\'s history of changes — including who approved what — the client saw immediate value in the visibility and traceability.',
+    pain: 'Time fraud can occur not only at the employee level, but through approval abuse.',
+    impact: 'Financial loss from internal fraud; inability to detect without an audit trail.',
+    howToSay: '"Sometimes the issue is not just whether an employee clocked correctly — it is whether the approval process itself can be trusted. Push gives you a record of what changed, when it changed, and who approved it."',
+    usecases: ['Discovery', 'Demo', 'Objection Handling'],
+    painThemes: ['Labor cost', 'Compliance risk'],
+    personas: ['Owner', 'Multi-Unit Executive', 'Finance Leader'],
+    tags: ['audit trail', 'history of changes', 'fraud', 'approvals', 'transparency', 'accountability'],
+    whyItWorks: 'High-stakes story that makes an abstract "audit trail" feature immediately tangible and urgent.',
+    bestTime: 'When discussing the approval or change history features in Push.',
+    whatProspectFeels: 'Discomfort — the realization that this could happen in their own business.',
+    transition: '"The most compelling audit trail story we have involves something that the operator didn\'t expect…"',
+    followup: '"If a manager and an employee were colluding on hours, would you have any way to detect that today?"'
+  },
+  {
+    id: 40,
+    title: 'Employee Comments Reduce Text-Message Back-and-Forth',
+    features: ['clocksettings'],
+    summary: 'When employees work multiple positions or cover unexpected shifts, a comment attached to the punch eliminates rounds of texts asking what actually happened.',
+    fullStory: 'Lexington shared that when an employee works multiple positions or a manager calls out and responsibilities shift, it is helpful for employees to leave a note directly on the punch. That context helps the management team approve hours correctly without a chain of texts afterward.',
+    pain: 'Without context attached to the punch, approvers have to chase answers later.',
+    impact: 'Faster approvals; fewer texts and calls to resolve punch questions.',
+    howToSay: '"Instead of payroll or management texting around asking why a shift looks different, the explanation is already attached to the punch. That context matters, especially when questions come up weeks later."',
+    usecases: ['Demo'],
+    painThemes: ['Admin burden', 'Payroll errors'],
+    personas: ['Payroll Leader', 'General Manager', 'HR Leader'],
+    tags: ['punch comments', 'context', 'approvals', 'payroll', 'communication'],
+    whyItWorks: 'Small but specific — everyone has been in a text chain trying to understand a payroll anomaly.',
+    bestTime: 'During time approval or payroll workflow demos.',
+    whatProspectFeels: 'Appreciation for a simple tool that eliminates a recurring annoyance.',
+    transition: '"Here\'s a feature that sounds minor but eliminates a frustration that comes up every single payroll cycle…"',
+    followup: '"When a punch looks unusual, how does your team currently figure out what actually happened?"'
+  },
+  {
+    id: 41,
+    title: 'Clock Adjustments Automatically Sent to the Employee',
+    features: ['cacompilance', 'clocksettings'],
+    summary: 'In California, if a manager adjusts an employee\'s time, the employee must be able to see and respond to it — Push automates that acknowledgment and documentation.',
+    fullStory: 'Lexington shared that in California demos, one of the strongest stories is the clock adjustment workflow. If a manager adjusts an employee\'s time, the employee automatically receives it for review and can approve it or dispute it with a comment.',
+    pain: 'Manual clock adjustments create compliance risk when there is no verified employee acknowledgment.',
+    impact: 'Legal exposure reduced; documented proof that employee reviewed adjustments.',
+    howToSay: '"If a manager adjusts someone\'s time, the risk is not just the adjustment — it is whether you can prove the employee saw and agreed to it. Push automatically creates that review step and keeps the documentation together."',
+    usecases: ['Demo', 'Discovery'],
+    painThemes: ['Compliance risk'],
+    personas: ['HR Leader', 'Owner', 'Operator'],
+    tags: ['California compliance', 'clock adjustments', 'employee acknowledgment', 'audit trail', 'KayaPush'],
+    whyItWorks: 'Compliance documentation that\'s automated — removes a manual step while reducing legal risk.',
+    bestTime: 'California demos or any discussion of clock adjustment workflows.',
+    whatProspectFeels: 'Relief — this is exactly what they worry about but haven\'t solved.',
+    transition: '"In California, clock adjustments carry a specific compliance risk that most systems don\'t address…"',
+    followup: '"Right now, if a manager changes an employee\'s hours, is there any documented record that the employee was made aware?"'
+  },
+  {
+    id: 42,
+    title: 'Homebase Users Still Worried About Break Compliance',
+    features: ['cacompilance'],
+    summary: 'California operators using Homebase still feel uneasy about break compliance — having a tool doesn\'t equal having confidence in documentation.',
+    fullStory: 'A rep shared that California prospects using Homebase often still feel uneasy about whether their break compliance is properly documented. The concern is that even if they have a system, they may still be exposed if breaks and changes are not tracked clearly enough.',
+    pain: 'Having a tool is not the same as having confidence in compliance.',
+    impact: 'Ongoing legal exposure despite having a scheduling system.',
+    howToSay: '"A lot of California operators are not asking, \'Do I have a scheduling tool?\' They are asking, \'If I am challenged on this later, do I have the documentation to defend myself?\' That is the gap Push helps close."',
+    usecases: ['Objection Handling', 'Discovery'],
+    painThemes: ['Compliance risk'],
+    personas: ['HR Leader', 'Owner', 'Operator'],
+    tags: ['California compliance', 'break compliance', 'Homebase', 'documentation', 'audit'],
+    whyItWorks: 'Directly addresses a competitor gap. Reframes from "do you have a tool" to "can you defend yourself."',
+    bestTime: 'When the prospect is comparing Push to Homebase or another system.',
+    whatProspectFeels: 'Uncertainty — they realize confidence in compliance is different from having software.',
+    transition: '"We talk to a lot of California operators who have a system — and are still nervous…"',
+    followup: '"If you were audited on break compliance today, how confident are you that your documentation is complete?"'
+  },
+  {
+    id: 43,
+    title: "Exhibits Using a Payroll Admin's Personal Cell Phone as the Paper Trail",
+    features: ['cacompilance'],
+    summary: 'A four-location group\'s entire paper trail for labor adjustments lived in one payroll admin\'s personal text messages — and the owner admitted they\'d lose in court.',
+    fullStory: 'A four-location group had a central payroll or admin person receiving roughly 20 texts per day from managers and employees about differences between scheduled shifts and worked time. That personal phone effectively became the company\'s paper trail. The prospect acknowledged that if they were sued, they would likely lose.',
+    pain: 'Text messages are not a scalable or defensible system of record.',
+    impact: 'Significant legal exposure if labor practices were ever challenged.',
+    howToSay: '"If the history of your labor adjustments lives in someone\'s text messages, that is a major operational and compliance risk. Push puts that communication and approval trail where it belongs — inside the system."',
+    usecases: ['Discovery', 'Closing / Urgency'],
+    painThemes: ['Compliance risk', 'Admin burden'],
+    personas: ['Owner', 'HR Leader', 'Payroll Leader'],
+    tags: ['California compliance', 'audit trail', 'text messages', 'labor adjustments', 'compliance risk', 'paper trail'],
+    whyItWorks: 'Prospect self-admitted they\'d lose in court — a rare moment of candor that validates the urgency.',
+    bestTime: 'When discussing compliance documentation with California or multi-location operators.',
+    whatProspectFeels: 'Urgency — this is a real, named risk they\'ve been aware of but haven\'t addressed.',
+    transition: '"I\'ll share a situation a prospect described where their own words made the case for us…"',
+    followup: '"If your labor practices were ever questioned, where exactly would you go to pull the documentation needed to defend the business?"'
+  },
+  {
+    id: 44,
+    title: 'Break Entitlements Change When Shift Durations Change',
+    features: ['cacompilance', 'compliance'],
+    summary: 'When a shift changes length, required breaks may also change — and if those changes aren\'t documented, the business may not even know if breaks were given correctly.',
+    fullStory: 'The team discussed that when the length of a shift changes, the employee\'s required breaks may change as well. If those schedule and clock changes are not fully documented, the business may not even know whether employees received the correct breaks.',
+    pain: 'Break compliance becomes fragile when schedules and actual worked hours drift apart without documentation.',
+    impact: 'Compliance exposure from undocumented break rule changes.',
+    howToSay: '"The moment a shift changes, break expectations may change too. If those changes live in side conversations or manual notes, compliance becomes very hard to prove later."',
+    usecases: ['Discovery', 'Demo'],
+    painThemes: ['Compliance risk'],
+    personas: ['HR Leader', 'Owner', 'Operator'],
+    tags: ['breaks', 'California compliance', 'shift changes', 'documentation', 'labor law'],
+    whyItWorks: 'Creates awareness of a compliance domino effect that operators don\'t always realize exists.',
+    bestTime: 'When discussing break compliance or shift flexibility with California operators.',
+    whatProspectFeels: 'Surprise — they hadn\'t thought about how shift length changes trigger break rule changes.',
+    transition: '"There\'s a compliance wrinkle that most operators don\'t know about until it becomes a problem…"',
+    followup: '"When a manager changes a shift length mid-day, does anyone track whether the break entitlements were updated to match?"'
+  },
+  {
+    id: 45,
+    title: 'Vibe by California Saving the Equivalent of a Full-Time Person',
+    features: ['cacompilance', 'compliance'],
+    summary: 'Vibe by California estimated that digital compliance prompts, waivers, and attached documentation saved the equivalent of ~8 hours of management time per day.',
+    fullStory: 'The training revisited the Vibe by California example. Their leadership valued that employee prompts, waiver signatures, and related compliance documents were attached to employee files instead of being handled through paper forms and filing cabinets. The story was framed as saving the equivalent of roughly eight hours per day across the management team — essentially a full-time person.',
+    pain: 'Compliance processes are not just risky; they can consume enormous operational time.',
+    impact: 'Eight hours of management time saved daily; reduced full-time headcount need.',
+    howToSay: '"One California operator told us the compliance side alone felt like getting an extra person back. The value was not only reduced risk — it was that managers no longer spent their day chasing, filing, and verifying paperwork."',
+    usecases: ['Demo', 'Closing / Urgency', 'Follow-Up'],
+    painThemes: ['Admin burden', 'Compliance risk', 'Labor cost'],
+    personas: ['HR Leader', 'Owner', 'Multi-Unit Executive'],
+    tags: ['California compliance', 'Vibe', 'break waivers', 'KayaPush', 'ROI', 'full-time equivalent'],
+    whyItWorks: 'A full-time person equivalent is a tangible ROI that executives can immediately map to headcount savings.',
+    bestTime: 'Closing, ROI conversations, or follow-up after a California compliance demo.',
+    whatProspectFeels: 'The value reframes itself as a headcount decision, not a software decision.',
+    transition: '"One of our California customers calculated the ROI in the most memorable way…"',
+    followup: '"If you could get 8 hours of management time back per day across your compliance process, what would your team do with that time?"'
+  },
+  {
+    id: 46,
+    title: 'The Hidden Manual Work Between Managers and Payroll',
+    features: ['payrollflow'],
+    summary: 'Operators think payroll is easy because they "send the hours" — but behind the scenes, the payroll team is doing hours of manual cleanup and corrections.',
+    fullStory: 'The team discussed how operators often assume payroll is simple because they "send the hours away," but the payroll team may be doing substantial manual work behind the scenes. Hours need to be reviewed, questioned, adjusted, and sometimes corrected through back-and-forth with managers.',
+    pain: 'Many businesses underestimate the labor cost and error risk in payroll preparation.',
+    impact: 'Hidden payroll admin cost; errors that surface only at the end of a painful process.',
+    howToSay: '"Often the operators say, \'Payroll is fine, we just send the hours over.\' Then we speak with payroll, and it turns out there is an entire manual cleanup process happening behind the curtain. Push removes a lot of that translation work."',
+    usecases: ['Discovery', 'Objection Handling'],
+    painThemes: ['Admin burden', 'Payroll errors'],
+    personas: ['Payroll Leader', 'HR Leader', 'Owner'],
+    tags: ['payroll', 'manual work', 'hours', 'integration', 'payroll readiness', 'hidden cost'],
+    whyItWorks: 'Surface the gap between the operator\'s view ("easy") and the payroll team\'s reality ("messy"). Requires getting to the payroll person in the room.',
+    bestTime: 'Discovery calls that include both operations and payroll/HR stakeholders.',
+    whatProspectFeels: 'The operator may feel slightly embarrassed; the payroll person feels seen.',
+    transition: '"I always ask both the operator and the payroll team how easy payroll is — the answers are usually very different…"',
+    followup: '"Could we connect with the person who actually processes payroll — I\'d love to understand what their side of the process looks like?"'
+  },
+  {
+    id: 47,
+    title: 'Off-Cycle Payroll Costs Caused by Missed Corrections',
+    features: ['payrollflow'],
+    summary: 'Payroll errors caught too late require an off-cycle run — which means extra admin work and potentially additional fees from a third-party payroll provider.',
+    fullStory: 'A rep noted that when labor errors are identified late, payroll may need to run an off-cycle payment. That can mean extra administrative work and, in some cases, additional fees from a third-party payroll provider.',
+    pain: 'Payroll mistakes are not only annoying; they can create extra direct costs.',
+    impact: 'Off-cycle payroll fees; admin time for an entirely avoidable second run.',
+    howToSay: '"When hours are corrected too late, you are no longer just fixing a timecard — you may be creating another payroll run, another fee, and another employee frustration."',
+    usecases: ['Discovery', 'Closing / Urgency'],
+    painThemes: ['Payroll errors', 'Labor cost'],
+    personas: ['Payroll Leader', 'Finance Leader', 'Owner'],
+    tags: ['payroll', 'off-cycle', 'corrections', 'payroll accuracy', 'fees'],
+    whyItWorks: 'Concrete downstream cost — transforms an abstract "accuracy" benefit into a real fee avoidance story.',
+    bestTime: 'When the prospect mentions off-cycle runs or late corrections to payroll.',
+    whatProspectFeels: 'Recognition — off-cycle runs feel expensive and avoidable.',
+    transition: '"Here\'s a cost of payroll errors that most people forget to include in their calculations…"',
+    followup: '"How often does your team run off-cycle payroll corrections — and do you know what that\'s costing in admin time or fees?"'
+  },
+  {
+    id: 48,
+    title: 'Spark Was Considering Hiring a Payroll Team',
+    features: ['payrollflow'],
+    summary: 'An 8-location California operator had one HR person managing everything — and the workload had become so unsustainable they were about to hire one or two more full-time payroll staff.',
+    fullStory: 'Spark, an eight-location California operator, had one HR leader, Sandy, responsible for payroll and administration. Because payroll, scheduling, and time tracking were disconnected across systems, the workload had become unsustainable. They were considering either switching systems or hiring one to two additional full-time payroll staff.',
+    pain: 'Disconnected systems can force companies to add headcount simply to manage administrative complexity.',
+    impact: 'Two potential FTE hires avoided by adopting a connected system.',
+    howToSay: '"One multi-location operator was at the point where the options were either adopt a more connected system or hire a payroll team around the broken process. That is the type of admin burden Push is designed to prevent."',
+    usecases: ['Discovery', 'Demo', 'Closing / Urgency'],
+    painThemes: ['Admin burden', 'Labor cost', 'Multi-location complexity'],
+    personas: ['Multi-Unit Executive', 'HR Leader', 'Finance Leader', 'Owner'],
+    tags: ['payroll', 'Spark', 'California', 'headcount', 'disconnected systems', 'HR scaling'],
+    whyItWorks: 'Headcount framing makes ROI immediately calculable — two FTEs vs. a software cost is an obvious decision.',
+    bestTime: 'With growing multi-location operators who are approaching a staffing or systems breaking point.',
+    whatProspectFeels: 'Recognition — they may be approaching the same breaking point.',
+    transition: '"One of our California customers was staring down a decision that changed how I talk about this problem…"',
+    followup: '"As you add locations, how is your payroll and HR function scaling — are you adding headcount to keep up?"'
+  },
+  {
+    id: 49,
+    title: 'Parlor Franchisee Accountant Processing Payroll from Toast + QuickBooks',
+    features: ['payrollflow'],
+    summary: 'A Parlor franchisee\'s accountant spent 30 minutes per location processing payroll — and still couldn\'t resolve outliers because she lacked the schedule context.',
+    fullStory: 'A Parlor franchisee had an accountant processing payroll in QuickBooks while hours were tracked in Toast. Once she received the spreadsheet, it took roughly 30 minutes per location to process payroll. If she noticed an outlier — like someone appearing to work 17 hours in a day — she had to go back to the owner because she lacked schedule context.',
+    pain: 'Payroll processors waste time chasing context that should already be visible.',
+    impact: 'Delayed payroll processing; errors from context that lives in a separate system.',
+    howToSay: '"If your accountant sees a 17-hour shift but cannot see the schedule or approvals behind it, the payroll run stalls. Push gives the people processing payroll the context they need upfront."',
+    usecases: ['Discovery', 'Demo'],
+    painThemes: ['Payroll errors', 'Admin burden'],
+    personas: ['Payroll Leader', 'Finance Leader', 'Owner'],
+    tags: ['payroll', 'Parlor', 'Toast', 'QuickBooks', 'accountant', 'context', 'integration'],
+    whyItWorks: 'Specific operator + tool combination makes it feel real. The 17-hour shift detail is vivid and memorable.',
+    bestTime: 'When discussing payroll integrations or meeting with the accountant or finance lead.',
+    whatProspectFeels: 'The payroll person immediately recognizes this friction from their own experience.',
+    transition: '"Here\'s a real example from a franchisee whose payroll process revealed a bigger problem…"',
+    followup: '"When your payroll team sees something unusual in the hours, how do they currently verify whether it\'s correct?"'
+  },
+  {
+    id: 50,
+    title: 'Vancouver Coffee Shop Overpaying Everyone to Stay "Safe"',
+    features: ['canadianpayroll'],
+    summary: 'After one stat holiday mistake, a Vancouver coffee group started paying everyone stat pay as a blanket policy — even when some employees didn\'t qualify.',
+    fullStory: 'A smaller Vancouver coffee shop group had previously made a stat holiday mistake and dealt with a frustrated employee afterward. To avoid future issues, they began paying everyone as though they qualified, even when some employees likely did not. The business chose overpayment as a defensive strategy because calculating eligibility manually felt too risky and time-consuming.',
+    pain: 'When compliance calculations are difficult, operators may overpay to reduce perceived risk.',
+    impact: 'Monthly overpayment to avoid a compliance mistake.',
+    howToSay: '"One Vancouver operator got burned once on a stat holiday issue and decided it was safer to just pay everyone out every time. That kept them comfortable, but it also meant they were likely overpaying every month. Push gives them a better option: accurate calculation instead of blanket overpayment."',
+    usecases: ['Discovery', 'Demo'],
+    painThemes: ['Payroll errors', 'Compliance risk', 'Labor cost'],
+    personas: ['Owner', 'Payroll Leader', 'Finance Leader'],
+    tags: ['Canadian payroll', 'stat holiday', 'eligibility', 'overpayment', 'compliance', 'Vancouver'],
+    whyItWorks: 'Classic risk-avoidance story — the "solution" of blanket overpayment is itself a compounding cost.',
+    bestTime: 'With Canadian operators discussing payroll compliance or stat holiday management.',
+    whatProspectFeels: 'Recognition — many operators have adopted similar defensive overpayment strategies.',
+    transition: '"The most expensive compliance mistake isn\'t always getting fined — sometimes it\'s the defensive strategy you adopt afterward…"',
+    followup: '"How does your team currently calculate who is eligible for stat holiday pay — is that a manual process?"'
+  },
+  {
+    id: 51,
+    title: 'Accountant Says Stat Pay Took Three Days',
+    features: ['canadianpayroll'],
+    summary: 'An accountant on a call immediately reacted to automated stat holiday calculations — saying the last time she did it manually, it took two to three days of work.',
+    fullStory: 'The team referenced a prior call with a bar owner and accountant where the accountant immediately recognized the value of automatic stat holiday calculations. She reportedly reacted by saying the last time they handled it manually, it consumed two to three days of work.',
+    pain: 'Stat holiday pay can be a major time drain for payroll teams.',
+    impact: 'Two to three days of payroll time compressed into an automated function.',
+    howToSay: '"We had an accountant hear that Push automatically calculates stat holiday eligibility and her reaction was immediate — the last time she did that manually, it took days. That is exactly the type of payroll complexity we remove."',
+    usecases: ['Demo', 'Closing / Urgency'],
+    painThemes: ['Admin burden', 'Payroll errors'],
+    personas: ['Payroll Leader', 'Finance Leader'],
+    tags: ['Canadian payroll', 'stat holiday', 'accountant', 'automation', 'payroll efficiency'],
+    whyItWorks: 'Customer reaction story — the immediacy of the accountant\'s response signals real emotional value recognition.',
+    bestTime: 'When demonstrating stat holiday automation to payroll stakeholders.',
+    whatProspectFeels: 'The payroll person in the room immediately relates.',
+    transition: '"I\'ll tell you about an accountant\'s reaction to this feature that made the rep\'s job very easy…"',
+    followup: '"How long does your team typically spend on stat holiday calculations each time they come up?"'
+  },
+  {
+    id: 52,
+    title: 'Pax & Beneficia — Payroll Time Impacting Family Life',
+    features: ['canadianpayroll', 'payrollflow'],
+    summary: 'At Pax & Beneficia, payroll took so long that the person responsible couldn\'t pick up their children from school on payroll days.',
+    fullStory: 'A rep referenced Pax & Beneficia, where payroll consumed so much time that the person responsible could not pick up their children from school. The point was not just financial savings, but the personal toll of inefficient payroll processes.',
+    pain: 'Manual payroll work affects quality of life, not just operational efficiency.',
+    impact: 'Personal time sacrificed to manual payroll processes.',
+    howToSay: '"Sometimes payroll pain is not just, \'This takes too long.\' It is, \'This is affecting my life outside of work.\' We heard that directly from one operator whose payroll process kept them from picking up their kids from school."',
+    usecases: ['Discovery', 'Demo', 'Closing / Urgency'],
+    painThemes: ['Admin burden'],
+    personas: ['Payroll Leader', 'HR Leader', 'Owner'],
+    tags: ['payroll', 'Pax Beneficia', 'personal impact', 'efficiency', 'family'],
+    whyItWorks: 'Shifts from operational to personal — the most emotionally resonant kind of ROI story.',
+    bestTime: 'With the person who actually runs payroll, especially if they seem overwhelmed.',
+    whatProspectFeels: 'Being truly understood — this person likely has their own version of this story.',
+    transition: '"Sometimes the real cost of a broken payroll process isn\'t measured in dollars…"',
+    followup: '"What does payroll day look like for you personally — what\'s the part that takes the most out of you?"'
+  },
+  {
+    id: 53,
+    title: 'GM Spending Six Hours on Monday Payroll',
+    features: ['payrollsimplicity'],
+    summary: 'A former GM would start payroll at 9 AM and still be working on it at 2 or 3 PM every Monday. Push turns that into minutes.',
+    fullStory: 'A rep shared that a former GM would begin payroll at 9:00 AM and still be working on it at 2:00 or 3:00 PM every Monday. In contrast, Push payroll was positioned as taking only a few clicks and being completed in minutes.',
+    pain: 'Payroll can consume a full management block every pay cycle.',
+    impact: 'Five to six hours of GM time returned per pay cycle.',
+    howToSay: '"I\'ve worked with managers who lose half a Monday every pay period just getting payroll out the door. The promise of Push is not a prettier screen — it is getting that time back."',
+    usecases: ['Discovery', 'Demo', 'Closing / Urgency'],
+    painThemes: ['Admin burden'],
+    personas: ['General Manager', 'Owner', 'Payroll Leader'],
+    tags: ['payroll', 'simplicity', 'GM', 'time savings', 'pay runs'],
+    whyItWorks: 'Six hours is visceral — it\'s most of a workday. Puts the ROI in pure time terms any manager understands.',
+    bestTime: 'With GMs or owners who run their own payroll.',
+    whatProspectFeels: 'Either recognition ("that\'s me") or relief that they don\'t do it themselves.',
+    transition: '"Let me tell you about the most extreme payroll story I have heard from a general manager…"',
+    followup: '"How long does payroll typically take you — from starting the run to having it done?"'
+  },
+  {
+    id: 54,
+    title: 'Crumbl Tip Calculations Based on Hours Worked',
+    features: ['payrollsimplicity'],
+    summary: 'Crumbl operators manually calculate tips based on hours worked every cycle — Push automates the allocation once the total is entered.',
+    fullStory: 'A rep shared that Crumbl operators often manually calculate tips based on hours worked. The value of Push is that once the total tip amount is entered, the system helps calculate allocations based on hours worked, reducing spreadsheet work.',
+    pain: 'Manual tip calculations are repetitive and prone to mistakes.',
+    impact: 'Consistent, fast tip allocation without spreadsheets.',
+    howToSay: '"If you are calculating tips by hand based on hours worked, that is one more recurring payroll task that should not require a spreadsheet every cycle. Push streamlines that."',
+    usecases: ['Discovery', 'Demo'],
+    painThemes: ['Admin burden', 'Payroll errors'],
+    personas: ['Owner', 'Payroll Leader', 'General Manager'],
+    tags: ['tips', 'tip automation', 'Crumbl', 'payroll', 'spreadsheet', 'manual calculations'],
+    whyItWorks: 'Tip calculation is one of those recurring payroll headaches that feels "fine" until it\'s simplified.',
+    bestTime: 'With QSR or food service operators who pool tips.',
+    whatProspectFeels: 'Recognition — they do this every cycle and would prefer not to.',
+    transition: '"Here\'s a payroll task that sounds simple but eats time every single pay run…"',
+    followup: '"How does your team currently handle tip allocation — is that calculated manually or through a system?"'
+  },
+  {
+    id: 55,
+    title: 'The Juice Truck and ROEs',
+    features: ['payrollsimplicity'],
+    summary: 'The Juice Truck was using Push for workforce tools but not payroll — until Spencer showed that deactivating an employee automatically triggers ROE creation.',
+    fullStory: 'Spencer shared a story about The Juice Truck in Vancouver. They were using Push for workforce tools but not payroll because their payroll contact preferred an older system. When Spencer showed that deactivating an employee prompts ROE creation and that ROEs are included directly in the workflow, it was eye-opening.',
+    pain: 'When ROEs feel manual, businesses may delay or avoid them, creating compliance and employee-experience issues.',
+    impact: 'ROE creation embedded in the off-boarding workflow; no avoidance or delay.',
+    howToSay: '"One operator was shocked that when you deactivate an employee in Push, the ROE process is right there. It turned a task they avoided into something that became part of the workflow."',
+    usecases: ['Demo', 'Discovery'],
+    painThemes: ['Compliance risk', 'Admin burden'],
+    personas: ['Payroll Leader', 'HR Leader', 'Owner'],
+    tags: ['ROE', 'Record of Employment', 'Juice Truck', 'off-boarding', 'payroll compliance'],
+    whyItWorks: 'The "avoidance" of ROE creation is a real behavior. Showing it as automatic removes the friction that caused avoidance.',
+    bestTime: 'When discussing payroll off-boarding workflows or talking to operators with high turnover.',
+    whatProspectFeels: '"Why didn\'t we know about this sooner?"',
+    transition: '"There\'s a compliance task that a lot of operators quietly avoid — and Push makes it impossible to forget…"',
+    followup: '"What does your current process look like when you need to issue an ROE after an employee leaves?"'
+  },
+  {
+    id: 56,
+    title: 'Employee Ghosts After One Training Shift',
+    features: ['onboarding', 'payrollsimplicity'],
+    summary: 'A new hire works one shift, ghosts, and disappears — but the employer still needs complete payroll documentation before the first shift happens.',
+    fullStory: 'The team discussed fast food and dispensary environments where a new hire may work one training shift, decide the role is not for them, and disappear. Even if the employee ghosts, the employer still needs the proper records and payroll documentation.',
+    pain: 'High-turnover environments need onboarding completed before the employee begins work.',
+    impact: 'Complete documentation even when an employee never returns.',
+    howToSay: '"In high-turnover roles, someone may work one shift and never come back. That does not remove your documentation obligations. Push helps you collect what you need before that first shift ever happens."',
+    usecases: ['Discovery', 'Demo'],
+    painThemes: ['Compliance risk', 'Payroll errors'],
+    personas: ['HR Leader', 'Owner', 'Payroll Leader'],
+    tags: ['onboarding', 'self-onboarding', 'ghost employees', 'payroll documentation', 'high turnover'],
+    whyItWorks: 'High-turnover operators immediately recognize this situation — and the compliance liability it creates.',
+    bestTime: 'With QSR, hospitality, or cannabis operators who experience high turnover.',
+    whatProspectFeels: 'Urgency — if this has happened to them, they know the paperwork gap it creates.',
+    transition: '"In high-turnover environments, this situation comes up more than you might think…"',
+    followup: '"What happens to your payroll documentation if a new hire works one shift and never comes back?"'
+  },
+  {
+    id: 57,
+    title: 'Paper Pay Stubs Everywhere',
+    features: ['payrollsimplicity'],
+    summary: 'Paper pay stubs were printed at awkward times, rarely stored, and years later — when employees needed them — required tracking down a former employer.',
+    fullStory: 'Spencer shared that restaurants either printed pay stubs at awkward times or avoided printing them when possible. Employees ended up with stacks of paper they rarely stored properly. Years later, if they needed an old pay stub, they had to reconnect with a former employer.',
+    pain: 'Paper pay stubs create clutter, poor employee access, and unnecessary employer requests later.',
+    impact: 'Former employees requesting pay stubs years later; admin burden for past records.',
+    howToSay: '"If someone needs a pay stub from three years ago, that should not require a scavenger hunt through paper files or a call to a former employer. Push keeps that access with the employee."',
+    usecases: ['Discovery', 'Demo'],
+    painThemes: ['Admin burden'],
+    personas: ['HR Leader', 'Owner', 'General Manager'],
+    tags: ['pay stubs', 'employee app', 'digital', 'self-service', 'payroll records'],
+    whyItWorks: 'Every HR person has gotten that call from a former employee asking for an old pay stub.',
+    bestTime: 'When discussing employee self-service or the employee app features.',
+    whatProspectFeels: 'Recognition of an ongoing annoyance they haven\'t connected to a solvable problem.',
+    transition: '"Here\'s a scenario that happens to every restaurant\'s HR team at least once a year…"',
+    followup: '"What happens when a former employee contacts you asking for a pay stub from two or three years ago?"'
+  },
+  {
+    id: 58,
+    title: 'Cash Tips Going Missing at Earls',
+    features: ['payrollsimplicity'],
+    summary: 'At Earls, cash tips went missing from a locked safe — and even with limited access, the business had to make employees whole, creating extra cost.',
+    fullStory: 'Lexington shared that at Earls, cash tips could go missing even when locked in a safe and only a few people had access. If tips disappeared during handling or distribution, the business still had to make employees whole, creating additional cost.',
+    pain: 'Cash-heavy tip processes create theft risk and reconciliation headaches.',
+    impact: 'Business absorbs cost of missing tips; reconciliation burden on management.',
+    howToSay: '"Any time you are physically handling cash tips, there is risk — not just theft, but disputes, reconciliation, and having to make employees whole when something goes missing."',
+    usecases: ['Discovery', 'Demo'],
+    painThemes: ['Labor cost', 'Admin burden'],
+    personas: ['Owner', 'General Manager', 'Finance Leader'],
+    tags: ['tips', 'cash', 'Earls', 'tip theft', 'reconciliation', 'payroll'],
+    whyItWorks: 'Even a locked safe isn\'t safe — makes the risk feel real and close, not hypothetical.',
+    bestTime: 'With operators who manage significant cash tip pools.',
+    whatProspectFeels: 'Awareness of a risk they may have underweighted.',
+    transition: '"Cash tips feel controllable — until they\'re not, even in the most controlled environments…"',
+    followup: '"How does your team currently handle tip distribution — is that a cash process or electronic?"'
+  },
+  {
+    id: 59,
+    title: 'FAB Restaurants Learning Too Late That Labor Was Higher Than Expected',
+    features: ['reporting'],
+    summary: 'FAB would review labor at week\'s end thinking they were on track — then discover the following Friday that post-shift adjustments had changed everything.',
+    fullStory: 'A rep described a multi-location restaurant group that would consolidate reports at the end of the week and believe labor was running at a certain level. Then, by the following Friday, they would discover that post-shift clock adjustments had pushed labor higher than expected.',
+    pain: 'Reporting delays create a false sense of control.',
+    impact: 'Two weeks of labor went by before the true picture was known.',
+    howToSay: '"One group thought they had a clean read on labor every Monday, but by Friday they realized adjustments had changed the picture. Push helps teams see what is actually final, what is still pending, and where labor truly stands."',
+    usecases: ['Discovery', 'Demo'],
+    painThemes: ['Lack of visibility', 'Labor cost'],
+    personas: ['Multi-Unit Executive', 'Finance Leader', 'Owner'],
+    tags: ['enterprise reporting', 'labor', 'real-time', 'FAB', 'clock adjustments', 'visibility'],
+    whyItWorks: 'Missing two weeks of labor data is an urgent, quantifiable business risk. The "false sense of control" framing is powerful.',
+    bestTime: 'With multi-location operators who rely on end-of-week reports.',
+    whatProspectFeels: 'Discomfort — they may realize they have the same gap.',
+    transition: '"One of our multi-location customers had a reporting setup that felt reliable — until it wasn\'t…"',
+    followup: '"When you review your labor numbers, how confident are you that the data is complete and final — or could adjustments change it after you\'ve seen it?"'
+  },
+  {
+    id: 60,
+    title: 'Cactus Club / Earls Head Office Comparing GMs Across Locations',
+    features: ['reporting'],
+    summary: 'Groups like Cactus Club and Earls need to compare performance across every location — but when data lives in seven different systems, insights always arrive too late.',
+    fullStory: 'Spencer explained that groups like Cactus Club or Earls evaluate store-level performance through labor, sales, margins, and other metrics. But if head office has to pull information from payroll, scheduling, POS, and other systems, then manually stitch it together in spreadsheets, it becomes difficult to compare locations or spot underperformance quickly.',
+    pain: 'Multi-location operators need insight across the entire business, not just isolated store reports.',
+    impact: 'Slow identification of underperforming locations; spreadsheet-driven reporting delays.',
+    howToSay: '"When every location is effectively running as its own mini-business, head office needs to know where performance is strong and where it is slipping. If that requires manually combining seven systems in a spreadsheet, you will always be late to the insight. Push gives that visibility sooner."',
+    usecases: ['Discovery', 'Demo'],
+    painThemes: ['Lack of visibility', 'Multi-location complexity'],
+    personas: ['Multi-Unit Executive', 'Finance Leader', 'Owner'],
+    tags: ['enterprise reporting', 'BI', 'multi-location', 'Cactus Club', 'Earls', 'dashboards', 'performance'],
+    whyItWorks: 'Named enterprise brands validate that even sophisticated operators deal with this problem at scale.',
+    bestTime: 'With multi-unit executives or finance leaders who own cross-location performance.',
+    whatProspectFeels: 'The familiar frustration of being slow to data that should be readily available.',
+    transition: '"The brands you aspire to at scale — groups like Cactus or Earls — share a version of this exact challenge…"',
+    followup: '"How does head office currently compare performance across locations — and how long does it take to get a clean picture?"'
+  },
+  {
+    id: 61,
+    title: 'Holiday Party Planning by Word of Mouth',
+    features: ['surveys'],
+    summary: 'Collecting staff preferences for events like Christmas parties happens through scattered side conversations — surveys centralize and organize the responses.',
+    fullStory: 'Jamal shared that operators can use engagement surveys for practical items like Christmas party attendance, allergies, preferred music, or event planning. Instead of collecting preferences through word of mouth or tally sheets taped to a back door, managers can send a survey and get organized feedback by location.',
+    pain: 'Simple staff feedback is often gathered in messy, informal ways.',
+    impact: 'Organized, location-specific responses without manual follow-up.',
+    howToSay: '"Even something as simple as planning a staff event can turn into ten side conversations and a paper tally. Surveys let you ask once, collect cleanly, and act on the result."',
+    usecases: ['Demo', 'Discovery'],
+    painThemes: ['Admin burden'],
+    personas: ['HR Leader', 'General Manager', 'Owner'],
+    tags: ['surveys', 'engagement', 'holiday party', 'staff feedback', 'polling'],
+    whyItWorks: 'Light, relatable entry into a powerful feature — starts with an easy win before expanding to more strategic use cases.',
+    bestTime: 'As an opener into the engagement survey feature in demos.',
+    whatProspectFeels: 'Amusement at recognition — and curiosity about the bigger use cases.',
+    transition: '"Surveys sound serious, but let me start with the most practical example of how operators use them…"',
+    followup: '"How do you currently gather informal staff feedback — whether for events, training readiness, or just how the team is feeling?"'
+  },
+  {
+    id: 62,
+    title: 'Menu Knowledge and Wine Confidence',
+    features: ['surveys'],
+    summary: 'Instead of assuming staff know the new menu, a quick survey before service tells managers exactly who\'s ready — and who needs more support.',
+    fullStory: 'The team discussed using surveys to ask employees whether they feel comfortable with the wine list, understand menu items, or are prepared for product launches. Instead of assuming staff readiness, operators can collect direct feedback.',
+    pain: 'Managers often do not know whether training has actually landed.',
+    impact: 'Accurate read on staff readiness before service begins.',
+    howToSay: '"You can roll out a new menu, but do you know whether your team actually feels ready to speak to it? A survey lets you find that out before guests do."',
+    usecases: ['Demo', 'Discovery'],
+    painThemes: ['Admin burden'],
+    personas: ['General Manager', 'Owner', 'Operator'],
+    tags: ['surveys', 'menu training', 'wine knowledge', 'staff readiness', 'training follow-up'],
+    whyItWorks: 'Simple and powerful — no operator wants to find out their team doesn\'t know the menu from a guest complaint.',
+    bestTime: 'When discussing training follow-up or staff readiness before menu changes.',
+    whatProspectFeels: 'Mild anxiety — they\'ve assumed readiness before and been wrong.',
+    transition: '"Here\'s a question I like to ask operators: after a menu training, how do you know it actually worked?"',
+    followup: '"After a menu launch, what does your process look like for confirming that staff are actually ready to sell it?"'
+  },
+  {
+    id: 63,
+    title: 'Anonymous Pulse Checks That Otherwise Never Happen',
+    features: ['surveys'],
+    summary: 'Without a simple way to collect anonymous feedback, operators rely on manager reports — and only hear about problems after they\'ve become serious.',
+    fullStory: 'The training emphasized that many businesses either use third-party tools like SurveyMonkey and then stare at exported spreadsheets, or they simply do not run employee surveys at all because the process feels cumbersome.',
+    pain: 'If there is no simple mechanism for feedback, employees stay silent and leaders operate blind.',
+    impact: 'Early detection of engagement or morale issues before they become turnover.',
+    howToSay: '"Most operators do not have a real-time pulse on how staff feel. They hear what managers report, or they hear about problems once someone is already ready to leave. Anonymous surveys give employees a safer way to speak up earlier."',
+    usecases: ['Discovery', 'Demo'],
+    painThemes: ['Lack of visibility'],
+    personas: ['HR Leader', 'Multi-Unit Executive', 'Owner'],
+    tags: ['surveys', 'anonymous', 'engagement', 'sentiment', 'employee feedback', 'retention'],
+    whyItWorks: 'Frames the cost of silence — when employees don\'t have a channel, problems grow invisibly.',
+    bestTime: 'With HR leaders or multi-unit operators focused on engagement or retention.',
+    whatProspectFeels: 'Recognition of a leadership blind spot they know exists.',
+    transition: '"Most operators hear how staff are feeling through their managers — but how reliable is that filter?"',
+    followup: '"Do your employees have a safe, anonymous way to flag concerns or share feedback with leadership — or does that all go through managers?"'
+  },
+  {
+    id: 64,
+    title: 'The "Narnia Filing Cabinet" of Paper Reviews',
+    features: ['performance'],
+    summary: 'Restaurant filing cabinets are full of grease-stained, half-signed performance reviews — impossible to find or defend when disputes arise.',
+    fullStory: 'Jamal described the typical restaurant filing cabinet full of performance reviews with grease stains, missing dates, partial signatures, and incomplete records. If an employee later disputes whether a review or write-up happened, the business may struggle to prove it.',
+    pain: 'Paper performance documentation is inconsistent, difficult to access, and hard to defend.',
+    impact: 'Unable to substantiate disciplinary actions or performance patterns.',
+    howToSay: '"A lot of businesses technically do performance reviews, but they live in a filing cabinet, half-signed and impossible to search. Push turns that into a digital record employees and employers can actually rely on."',
+    usecases: ['Discovery', 'Demo'],
+    painThemes: ['Compliance risk', 'Admin burden'],
+    personas: ['HR Leader', 'Owner', 'Operator'],
+    tags: ['performance reviews', 'paper', 'filing cabinet', 'digital records', 'HR documentation'],
+    whyItWorks: '"Narnia" is a memorable descriptor that lands immediately with everyone who\'s ever dealt with a disorganized filing system.',
+    bestTime: 'When discussing HR documentation or employee records with HR leaders.',
+    whatProspectFeels: 'The private recognition that their own filing cabinet probably looks exactly like this.',
+    transition: '"Every HR person I talk to has some version of the Narnia filing cabinet story…"',
+    followup: '"If an employee disputed a write-up or claimed they never had a performance conversation, how would you prove it happened?"'
+  },
+  {
+    id: 65,
+    title: 'Reviews Are Not Just Compliance — They Support Retention',
+    features: ['performance'],
+    summary: 'Hospitality turnover often isn\'t about the work being bad — it\'s that employees don\'t see a path forward. Performance reviews create that visibility.',
+    fullStory: 'Colin shared a broader industry story: hospitality has historically had a reputation for transient employment, but the issue is not always that the work is bad — it is that employees often do not see a path forward. Performance reviews, career-development conversations, and documented next steps can help employees feel more invested.',
+    pain: 'Employees leave when they do not see growth, development, or a future with the business.',
+    impact: 'Reduced turnover through structured development conversations.',
+    howToSay: '"People often leave hospitality because they do not see what comes next. A review process is not just an HR checkbox — it is a way to create visible development, clearer expectations, and stronger retention conversations."',
+    usecases: ['Discovery', 'Demo', 'Follow-Up'],
+    painThemes: ['Admin burden'],
+    personas: ['HR Leader', 'Multi-Unit Executive', 'Owner'],
+    tags: ['performance reviews', 'retention', 'career development', 'hospitality', 'turnover'],
+    whyItWorks: 'Reframes performance reviews from compliance to business strategy — which changes who cares about them.',
+    bestTime: 'When discussing retention, turnover, or employee experience with operators concerned about staffing.',
+    whatProspectFeels: 'Recognition — they know good employees have left for "better opportunities" that weren\'t necessarily better jobs.',
+    transition: '"Most people think of performance reviews as an HR obligation — but there\'s a retention angle that most operators miss…"',
+    followup: '"When your best employees have left, what reasons do they give — and do you have a way to address those proactively before someone\'s already out the door?"'
+  },
+];
+
+// ===== FILTER OPTIONS =====
+const USE_CASES = ['Discovery', 'Demo', 'Objection Handling', 'Follow-Up', 'Closing / Urgency', 'Cold Call'];
+const PAIN_THEMES = ['Admin burden', 'Compliance risk', 'Labor cost', 'Payroll errors', 'Scheduling inefficiency', 'Lack of visibility', 'Multi-location complexity', 'Hiring bottlenecks'];
+const PERSONAS = ['Owner', 'Operator', 'HR Leader', 'Payroll Leader', 'Finance Leader', 'General Manager', 'Multi-Unit Executive'];
+
+// ===== STATE =====
+let activeFeature = null;
+let searchQuery = '';
+let activeUsecases = [];
+let activePains = [];
+let activePersonas = [];
+
+// ===== HELPERS =====
+function getStoriesForFeature(featureId) {
+  return STORIES.filter(s => s.features.includes(featureId));
+}
+
+function filterStories(stories) {
+  return stories.filter(s => {
+    const searchStr = (s.title + ' ' + s.summary + ' ' + s.pain + ' ' + (s.tags||[]).join(' ')).toLowerCase();
+    if (searchQuery && !searchStr.includes(searchQuery.toLowerCase())) return false;
+    if (activeUsecases.length && !activeUsecases.some(u => s.usecases.includes(u))) return false;
+    if (activePains.length && !activePains.some(p => s.painThemes.includes(p))) return false;
+    if (activePersonas.length && !activePersonas.some(p => s.personas.includes(p))) return false;
+    return true;
+  });
+}
+
+// ===== RENDER =====
+function getStoryCard(story, showFeatureBadge=false) {
+  const featureNames = story.features.map(fid => {
+    const f = FEATURES.find(x => x.id === fid);
+    return f ? f.short : fid;
+  });
+
+  const tagChips = (story.tags||[]).slice(0,5).map(t => `<span class="story-tag tag-persona">${t}</span>`).join('');
+  const usecaseChips = (story.usecases||[]).map(u => `<span class="story-tag tag-usecase">${u}</span>`).join('');
+  const painChips = (story.painThemes||[]).map(p => `<span class="story-tag tag-pain">${p}</span>`).join('');
+
+  const featureBadgesHtml = showFeatureBadge ? featureNames.map(fn => `<span class="feature-badge">📌 ${fn}</span>`).join('') : '';
+
+  return `
+    <div class="story-card" id="card-${story.id}">
+      <div class="story-card-header" onclick="toggleCard(${story.id})">
+        <div class="story-card-main">
+          ${featureBadgesHtml}
+          <div class="story-title">${story.title}</div>
+          <div class="story-summary">${story.summary}</div>
+          <div class="story-tags-row">${usecaseChips}${painChips}</div>
+        </div>
+        <div class="expand-toggle">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m6 9 6 6 6-6"/></svg>
+        </div>
+      </div>
+      <div class="story-card-body">
+        <div class="body-section">
+          <div class="body-label">Full Story / Talking Track</div>
+          <div class="full-story-box">${story.fullStory}</div>
+        </div>
+        <div class="body-section">
+          <div class="body-label">How to Say It in a Call</div>
+          <div class="full-story-box" style="border-left-color: var(--accent2); font-style: normal;">${story.howToSay}</div>
+        </div>
+        <div class="callout-row">
+          <div class="callout-box">
+            <div class="body-label">Pain Point It Illustrates</div>
+            <div class="body-text">${story.pain}</div>
+          </div>
+          <div class="callout-box">
+            <div class="body-label">Business Impact / Outcome</div>
+            <div class="body-text">${story.impact}</div>
+          </div>
+          <div class="callout-box">
+            <div class="body-label">Why This Story Works</div>
+            <div class="body-text">${story.whyItWorks}</div>
+          </div>
+          <div class="callout-box">
+            <div class="body-label">Best Time to Use It</div>
+            <div class="body-text">${story.bestTime}</div>
+          </div>
+        </div>
+        <div class="body-section">
+          <div class="body-label">What Problem It Makes the Prospect Feel</div>
+          <div class="body-text">${story.whatProspectFeels}</div>
+        </div>
+        ${story.personas && story.personas.length ? `<div class="body-section"><div class="body-label">Best-Fit Audience</div><div class="story-tags-row">${story.personas.map(p=>`<span class="story-tag tag-persona">${p}</span>`).join('')}</div></div>` : ''}
+        <div class="body-section">
+          <div class="body-label">Feature Tags</div>
+          <div class="story-tags-row">${featureNames.map(fn=>`<span class="story-tag tag-feature">${fn}</span>`).join('')}${tagChips}</div>
+        </div>
+        ${story.transition ? `<div class="transition-box"><div class="body-label" style="color:var(--accent3);">Suggested Transition</div><div class="body-text" style="font-style:italic;">${story.transition}</div></div>` : ''}
+        ${story.followup ? `<div class="followup-box"><div class="body-label" style="color:var(--accent);">Suggested Follow-Up Question</div><div class="body-text" style="font-style:italic;">${story.followup}</div></div>` : ''}
+      </div>
+    </div>
+  `;
+}
+
+function renderFeatureNav() {
+  const nav = document.getElementById('featureNav');
+  nav.innerHTML = `<button class="feature-nav-item ${!activeFeature ? 'active' : ''}" onclick="showHome()">
+    <span class="feature-nav-name">🏠 All Features</span>
+    <span class="feature-nav-count">${STORIES.length}</span>
+  </button>` +
+  FEATURES.map(f => {
+    const count = getStoriesForFeature(f.id).length;
+    return `<button class="feature-nav-item ${activeFeature === f.id ? 'active' : ''}" onclick="showFeature('${f.id}')">
+      <span class="feature-nav-name">${f.icon} ${f.name}</span>
+      <span class="feature-nav-count">${count}</span>
+    </button>`;
+  }).join('');
+}
+
+function renderFeatureGrid() {
+  const grid = document.getElementById('featureGrid');
+  grid.innerHTML = FEATURES.map(f => {
+    const count = getStoriesForFeature(f.id).length;
+    return `<div class="feature-tile" onclick="showFeature('${f.id}')">
+      <div class="feature-tile-icon">${f.icon}</div>
+      <div class="feature-tile-name">${f.name}</div>
+      <div class="feature-tile-count">${count} ${count === 1 ? 'Story' : 'Stories'}</div>
+    </div>`;
+  }).join('');
+}
+
+function renderFilterPills() {
+  document.getElementById('usecasePills').innerHTML = USE_CASES.map(u =>
+    `<span class="filter-pill ${activeUsecases.includes(u)?'active':''}" onclick="toggleFilter('usecase','${u}')">${u}</span>`
+  ).join('');
+  document.getElementById('painPills').innerHTML = PAIN_THEMES.map(p =>
+    `<span class="filter-pill ${activePains.includes(p)?'active':''}" onclick="toggleFilter('pain','${p}')">${p}</span>`
+  ).join('');
+  document.getElementById('personaPills').innerHTML = PERSONAS.map(p =>
+    `<span class="filter-pill ${activePersonas.includes(p)?'active':''}" onclick="toggleFilter('persona','${p}')">${p}</span>`
+  ).join('');
+  const hasFilters = activeUsecases.length || activePains.length || activePersonas.length;
+  document.getElementById('clearFilters').style.display = hasFilters ? 'block' : 'none';
+}
+
+function showHome() {
+  activeFeature = null;
+  document.getElementById('homeView').style.display = 'block';
+  document.getElementById('featureView').style.display = 'none';
+  document.getElementById('searchView').style.display = 'none';
+  renderFeatureNav();
+  renderFeatureGrid();
+}
+
+function showFeature(featureId) {
+  activeFeature = featureId;
+  const feature = FEATURES.find(f => f.id === featureId);
+  const stories = filterStories(getStoriesForFeature(featureId));
+
+  document.getElementById('homeView').style.display = 'none';
+  document.getElementById('featureView').style.display = 'block';
+  document.getElementById('searchView').style.display = 'none';
+
+  document.getElementById('featureViewName').textContent = feature.icon + ' ' + feature.name;
+  document.getElementById('featureViewCount').textContent = `${stories.length} ${stories.length === 1 ? 'story' : 'stories'} found`;
+
+  document.getElementById('featureStoryList').innerHTML = stories.length
+    ? stories.map(s => getStoryCard(s, false)).join('')
+    : '<div class="no-results"><strong>No stories match your filters</strong>Try adjusting or clearing your filters.</div>';
+
+  renderFeatureNav();
+}
+
+function showSearchResults() {
+  activeFeature = null;
+  const allStories = filterStories(STORIES);
+  document.getElementById('homeView').style.display = 'none';
+  document.getElementById('featureView').style.display = 'none';
+  document.getElementById('searchView').style.display = 'block';
+  document.getElementById('searchResultsLabel').innerHTML = `<span>${allStories.length}</span> ${allStories.length === 1 ? 'story' : 'stories'} found`;
+  document.getElementById('searchStoryList').innerHTML = allStories.length
+    ? allStories.map(s => getStoryCard(s, true)).join('')
+    : '<div class="no-results"><strong>No stories match your search</strong>Try different keywords or clear your filters.</div>';
+  renderFeatureNav();
+}
+
+function toggleCard(id) {
+  const card = document.getElementById('card-' + id);
+  card.classList.toggle('expanded');
+}
+
+function toggleFilter(type, value) {
+  if (type === 'usecase') {
+    const idx = activeUsecases.indexOf(value);
+    if (idx >= 0) activeUsecases.splice(idx, 1); else activeUsecases.push(value);
+  } else if (type === 'pain') {
+    const idx = activePains.indexOf(value);
+    if (idx >= 0) activePains.splice(idx, 1); else activePains.push(value);
+  } else if (type === 'persona') {
+    const idx = activePersonas.indexOf(value);
+    if (idx >= 0) activePersonas.splice(idx, 1); else activePersonas.push(value);
+  }
+  renderFilterPills();
+  refreshCurrentView();
+}
+
+function refreshCurrentView() {
+  if (searchQuery || activeUsecases.length || activePains.length || activePersonas.length) {
+    if (activeFeature) {
+      showFeature(activeFeature);
+    } else if (searchQuery) {
+      showSearchResults();
+    } else {
+      showSearchResults();
+    }
+  } else {
+    if (activeFeature) showFeature(activeFeature);
+    else showHome();
+  }
+}
+
+document.getElementById('clearFilters').addEventListener('click', () => {
+  activeUsecases = []; activePains = []; activePersonas = [];
+  renderFilterPills();
+  refreshCurrentView();
+});
+
+document.getElementById('backBtn').addEventListener('click', showHome);
+
+document.getElementById('searchInput').addEventListener('input', (e) => {
+  searchQuery = e.target.value.trim();
+  if (searchQuery) {
+    showSearchResults();
+  } else if (!activeUsecases.length && !activePains.length && !activePersonas.length) {
+    if (activeFeature) showFeature(activeFeature);
+    else showHome();
+  } else {
+    refreshCurrentView();
+  }
+});
+
+// ===== INIT =====
+renderFilterPills();
+showHome();
+</script>
+</body>
+</html>
